@@ -40,3 +40,7 @@ npm install
 npm run dev
 npm run ci
 ```
+
+## Public deployment
+
+GitHub Actions deploys `main` to GitHub Pages through `.github/workflows/deploy.yml`. Enable **Settings > Pages > Build and deployment > Source: GitHub Actions** once in the repository. With the current repository name, the default public URL is `https://tanupam-CCI.github.io/Credit-Consumption-Calculator/`.

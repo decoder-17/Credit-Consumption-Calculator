@@ -12,6 +12,23 @@
     "test": "vitest run",
     "ci": "npm run typecheck && npm run lint && npm run test"
   },
-  "dependencies": { "@vitejs/plugin-react": "latest", "vite": "latest", "react": "latest", "react-dom": "latest" },
-  "devDependencies": { "@types/react": "latest", "@types/react-dom": "latest", "@typescript-eslint/eslint-plugin": "latest", "@typescript-eslint/parser": "latest", "eslint": "latest", "eslint-plugin-react-hooks": "latest", "prettier": "latest", "typescript": "latest", "vitest": "latest", "jsdom": "latest" }
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "eslint": "latest",
+    "eslint-plugin-react-hooks": "latest",
+    "jsdom": "latest",
+    "prettier": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
 }

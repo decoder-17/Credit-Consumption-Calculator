@@ -4,7 +4,7 @@
     "allowJs": false, "skipLibCheck": true, "esModuleInterop": true, "allowSyntheticDefaultImports": true,
     "strict": true, "noUnusedLocals": true, "noUnusedParameters": true, "module": "ESNext",
     "moduleResolution": "Bundler", "resolveJsonModule": true, "isolatedModules": true, "noEmit": true,
-    "jsx": "react-jsx", "types": ["vitest/globals"]
+    "jsx": "react-jsx", "types": ["node", "vitest/globals"]
   },
   "include": ["src", "vite.config.ts", "eslint.config.js"]
 }

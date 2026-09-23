@@ -31,7 +31,7 @@ body {
 .sidebar {
   width: 158px;
   flex: 0 0 158px;
-  background: #eef3fc;
+  background: #fff;
   border-right: 0;
   padding: 16px 10px;
 }
@@ -90,7 +90,7 @@ body {
   background: #eef3fc;
 }
 .topbar {
-  background: transparent;
+  background: #fff;
   border-bottom: 0;
   box-shadow: none;
   min-height: 62px;

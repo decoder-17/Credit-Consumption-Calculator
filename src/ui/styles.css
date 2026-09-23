@@ -33,7 +33,7 @@ body {
   flex: 0 0 158px;
   background: #fff;
   border-right: 0;
-  padding: 16px 10px;
+  padding: 14px 8px;
 }
 .sidebar-brand {
   display: flex;
@@ -47,7 +47,7 @@ body {
 .subscription-nav {
   display: grid;
   gap: 4px;
-  margin-top: 34px;
+  margin-top: 30px;
 }
 .subscription-nav h2 {
   margin: 0 8px 8px;
@@ -93,8 +93,8 @@ body {
   background: #fff;
   border-bottom: 0;
   box-shadow: none;
-  min-height: 62px;
-  padding: 14px 22px;
+  min-height: 58px;
+  padding: 12px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -109,25 +109,25 @@ body {
 .workspace-content {
   max-width: 1160px;
   margin: auto;
-  padding: 16px 22px 56px;
+  padding: 10px 12px 48px;
 }
 .card {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   box-shadow: 0 1px 3px #182b4a12;
-  padding: 16px 18px;
+  padding: 14px 16px;
 }
 .card + .card {
-  margin-top: 16px;
+  margin-top: 12px;
 }
 .controls-card {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .controls {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 12px;
 }
 .control {
   display: grid;
@@ -227,7 +227,7 @@ body {
 .summary-row {
   display: flex;
   align-items: baseline;
-  gap: 30px;
+  gap: 24px;
   flex-wrap: wrap;
 }
 .summary-row > div:first-child strong {
@@ -252,7 +252,7 @@ body {
 .summary-row dl {
   margin: 0 0 0 auto;
   display: flex;
-  gap: 30px;
+  gap: 24px;
   flex-wrap: wrap;
 }
 .summary-row dt {
@@ -271,7 +271,7 @@ body {
   border-radius: 8px;
   overflow: hidden;
   display: flex;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 .gauge > span {
   height: 100%;
@@ -324,7 +324,7 @@ body {
 }
 .button-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 .button {
@@ -334,7 +334,7 @@ body {
   font: inherit;
   font-size: 12px;
   font-weight: 600;
-  padding: 8px 14px;
+  padding: 7px 12px;
 }
 .button.primary {
   background: var(--blue);
@@ -371,7 +371,7 @@ th {
   color: #514f4d;
   font-size: 11px;
   font-weight: 600;
-  padding: 10px 12px;
+  padding: 8px 10px;
   text-align: right;
   white-space: nowrap;
 }
@@ -381,7 +381,7 @@ td.left {
 }
 td {
   border-bottom: 1px solid #eee;
-  padding: 9px 12px;
+  padding: 8px 10px;
   text-align: right;
   vertical-align: middle;
 }

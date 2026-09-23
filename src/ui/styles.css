@@ -12,7 +12,8 @@
   --green: #21874b;
   --amber: #c77919;
   --red: #d9363e;
-  --radius-card: 8px;
+  --radius-card: 10px;
+  --radius-table: 8px;
   --radius-control: 6px;
 }
 * {
@@ -357,7 +358,7 @@ body {
 .table-scroll {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-table);
 }
 table {
   border-collapse: collapse;

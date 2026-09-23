@@ -19,15 +19,22 @@
 * {
   box-sizing: border-box;
 }
+html,
+body,
+#root {
+  height: 100%;
+}
 body {
   margin: 0;
   min-width: 320px;
   background: #eef3fc;
+  overflow: hidden;
 }
 .app-shell {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   background: #eef3fc;
+  overflow: hidden;
 }
 .sidebar {
   width: 158px;
@@ -37,7 +44,8 @@ body {
   padding: 10px 8px;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 .sidebar-brand {
   display: flex;
@@ -125,6 +133,9 @@ body {
   flex: 1;
   min-width: 0;
   background: #eef3fc;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .topbar {
   background: #fff;
@@ -529,8 +540,14 @@ tfoot td {
   }
 }
 @media (max-width: 600px) {
+  body {
+    overflow: auto;
+  }
   .app-shell {
+    height: auto;
+    min-height: 100vh;
     display: block;
+    overflow: visible;
   }
   .sidebar {
     border-bottom: 0;
@@ -538,6 +555,8 @@ tfoot td {
     padding: 14px 16px;
     width: 100%;
     min-height: 0;
+    height: auto;
+    overflow: visible;
   }
   .subscription-nav {
     display: flex;
@@ -563,6 +582,10 @@ tfoot td {
   }
   .workspace-content {
     padding: 16px 12px 48px;
+  }
+  .workspace {
+    height: auto;
+    overflow: visible;
   }
   .controls {
     grid-template-columns: 1fr;

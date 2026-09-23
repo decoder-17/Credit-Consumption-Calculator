@@ -5,6 +5,7 @@ export type UsageType = {
   id: string;
   label: string;
   basis: string;
+  inputBasis?: "day" | "month";
   hint?: string;
   exampleQuantity?: number;
 };
@@ -44,4 +45,7 @@ export type PricingProvider = {
   usageTypes(): UsageType[];
   price(input: Record<string, number>): PriceResult;
   disclaimers: string[];
+  models?: readonly PricingModel[];
 };
+
+export type PricingModel = Omit<PricingProvider, "models">;

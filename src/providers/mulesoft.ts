@@ -6,7 +6,7 @@ export const muleSoftProvider: PricingProvider = {
   displayName: "MuleSoft Mule Credits",
   unit: "Mule Credits",
   rateCard: muleSoftRateCard,
-  usageTypes: () => muleSoftRateCard.usageTypes.map(({ id, label, basis, exampleQuantity }) => ({ id, label, basis, exampleQuantity })),
+  usageTypes: () => muleSoftRateCard.usageTypes.map(({ id, label, basis, inputBasis, exampleQuantity }) => ({ id, label, basis, inputBasis, exampleQuantity })),
   price: (input) => {
     const lines = muleSoftRateCard.usageTypes.map((usageType) => {
       const result = graduatedTiers(input[usageType.id] ?? 0, {

@@ -16,9 +16,12 @@ The provider contract is the extension point. A provider supplies identity, unit
 
 ## Current data status
 
-MuleSoft Mule Credits is ported from the original HTML calculator. Its May 2026 source and values are preserved in `src/rate-cards/mulesoft-mule-credits.ts`, and the legacy example total is locked by a test. The provider also links the MuleSoft usage documentation for Mule Credits and Automation Credits; usage types depend on the customer subscription plan, so plan-specific meter selection remains an explicit data-model follow-up rather than an inferred default.
+The UI currently has two subscription tabs:
 
-The flat per-seat provider proves the second pricing shape, but it is intentionally not priceable in production yet. The request did not include a vendor, rate, effective date, or source URL. It displays `[NEEDS DATA: ...]` and throws rather than inventing a price.
+- `MuleSoft Mule Credits`: graduated tier pricing with calculation month, day/month meter handling, reconciliation inputs, utilization summary, saved ledger, and CSV export.
+- `MuleSoft Automation Credits`: one tab with a `1.0`, `2.0`, or `3.0` credit-system selector. Versions 1.0 and 2.0 use the complete numeric tables published in the supplied MuleSoft documentation. Version 3.0 applies the documented rates that are available in the source extract and surfaces `[NEEDS DATA: ...]` for plan-specific rows that are not disclosed there.
+
+The unsupported flat per-seat placeholder was removed from the registry. Automation rate-card data lives in `src/rate-cards/mulesoft-automation-credits.ts`; adapter composition lives in `src/providers/mulesoft-automation.ts`. MuleSoft documentation says rates and usage types can vary by subscription plan, so the Order Form remains the authority for a production quote.
 
 ## How to add a subscription
 
@@ -31,7 +34,7 @@ The flat per-seat provider proves the second pricing shape, but it is intentiona
 
 ## Migration notes
 
-The original single-file calculator combined rate data, graduated-tier logic, DOM rendering, local storage, CSV export, copy, and styling in one script. The migration moves rate values to `src/rate-cards/mulesoft-mule-credits.ts`, the `creditsFor` calculation to `src/domain/strategies.ts`, provider composition to `src/providers/mulesoft.ts`, and rendering to `src/ui/`. The new UI keeps the light Anypoint-inspired tokens, visible focus, responsive layout, and reduced-motion rule. Ledger persistence and CSV export remain follow-up application concerns for the production migration.
+The original single-file calculator combined rate data, graduated-tier logic, DOM rendering, local storage, CSV export, copy, and styling in one script. The migration moves rate values to versioned files under `src/rate-cards/`, calculation strategies to `src/domain/strategies.ts`, provider composition to `src/providers/`, and rendering to `src/ui/`. The UI keeps the light Anypoint-inspired tokens, visible focus, responsive layout, and reduced-motion rule. Saved ledger state is isolated by provider/model in browser storage.
 
 ## Commands
 

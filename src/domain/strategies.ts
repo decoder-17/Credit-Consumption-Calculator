@@ -29,6 +29,10 @@ export function flatPerUnit(quantity: number, rate: number): StrategyResult {
   return { amount: Math.max(0, quantity) * rate };
 }
 
+export function unitsToCredits(quantity: number, unitsPerCredit: number): StrategyResult {
+  return { amount: Math.max(0, quantity) / unitsPerCredit };
+}
+
 export const perSeat = flatPerUnit;
 
 export function committedWithOverage(quantity: number, committed: number, rate: number): StrategyResult {

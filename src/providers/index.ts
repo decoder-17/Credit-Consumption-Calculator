@@ -1,6 +1,6 @@
 import type { PricingProvider } from "../domain";
 import { muleSoftProvider } from "./mulesoft";
-import { perSeatLicenseProvider } from "./per-seat-license";
+import { muleSoftAutomationProvider } from "./mulesoft-automation";
 
-export const providers: readonly PricingProvider[] = [muleSoftProvider, perSeatLicenseProvider];
+export const providers: readonly PricingProvider[] = [muleSoftProvider, muleSoftAutomationProvider];
 export const providerRegistry = new Map(providers.map((provider) => [provider.id, provider]));

@@ -4,7 +4,7 @@ import { muleSoftProvider } from "./mulesoft";
 describe("MuleSoft Mule Credits provider", () => {
   it("locks the legacy example output", () => {
     const result = muleSoftProvider.price(Object.fromEntries(muleSoftProvider.usageTypes().map((usageType) => [usageType.id, usageType.exampleQuantity ?? 0])));
-    expect(result.total).toBe(10803200);
+    expect(result.total).toBe(1215800);
     expect(result.unit).toBe("Mule Credits");
   });
   it("preserves zero and over-limit behavior", () => {

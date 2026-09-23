@@ -31,7 +31,7 @@ The flat per-seat provider proves the second pricing shape, but it is intentiona
 
 ## Migration notes
 
-The old `credit-consumption-calculator.html` combined rate data, graduated-tier logic, DOM rendering, local storage, CSV export, copy, and styling in one script. The migration moves rate values to `src/rate-cards/mulesoft-mule-credits.ts`, the `creditsFor` calculation to `src/domain/strategies.ts`, provider composition to `src/providers/mulesoft.ts`, and rendering to `src/ui/`. The new UI keeps the light Anypoint-inspired tokens, visible focus, responsive layout, and reduced-motion rule. Ledger persistence and CSV export remain follow-up application concerns for the production migration; the original file is retained as a reference artifact.
+The original single-file calculator combined rate data, graduated-tier logic, DOM rendering, local storage, CSV export, copy, and styling in one script. The migration moves rate values to `src/rate-cards/mulesoft-mule-credits.ts`, the `creditsFor` calculation to `src/domain/strategies.ts`, provider composition to `src/providers/mulesoft.ts`, and rendering to `src/ui/`. The new UI keeps the light Anypoint-inspired tokens, visible focus, responsive layout, and reduced-motion rule. Ledger persistence and CSV export remain follow-up application concerns for the production migration.
 
 ## Commands
 

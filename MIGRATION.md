@@ -1,6 +1,6 @@
 # Migration notes
 
-The original single-file calculator remains at `credit-consumption-calculator.html` as the behavior reference.
+The original single-file calculator was ported into the layered application and removed once the behavior-lock tests were added.
 
 | Original responsibility | New location |
 | --- | --- |

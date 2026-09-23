@@ -179,10 +179,7 @@ export function App() {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <div className="sidebar-brand">
-          <span className="brand-mark" />
-          Credit consumption
-        </div>
+        <div className="sidebar-brand">Credit Consumption Calculator</div>
         <nav className="subscription-nav" aria-label="Subscriptions">
           <h2>Subscriptions</h2>
           {[...providerRegistry.values()].map((item) => (
@@ -199,32 +196,34 @@ export function App() {
       </aside>
       <main className="workspace">
         <header className="topbar">
-          <div>
-            <h1>{provider.displayName}</h1>
-            <p>Consumption calculator</p>
-          </div>
-          <div className="rate-meta">
-            Rate card {profile.rateCard.version}
-            <br />
-            Effective {profile.rateCard.effectiveDate}
-          </div>
+          <h1>{provider.displayName}</h1>
         </header>
         <div className="workspace-content">
           {provider.models && (
-            <section className="card model-card">
-              <label className="model-select">
-                <span>Credit system</span>
-                <select
-                  value={modelId}
-                  onChange={(event) => setModelId(event.target.value)}
-                >
-                  {provider.models.map((model) => (
-                    <option key={model.id} value={model.id}>
-                      {model.displayName}
-                    </option>
-                  ))}
-                </select>
-              </label>
+            <section
+              className="card model-card"
+              aria-labelledby="credit-system-label"
+            >
+              <div className="model-label" id="credit-system-label">
+                Credit system
+              </div>
+              <div
+                className="model-switcher"
+                role="group"
+                aria-labelledby="credit-system-label"
+              >
+                {provider.models.map((model) => (
+                  <button
+                    className={model.id === modelId ? "selected" : ""}
+                    key={model.id}
+                    type="button"
+                    aria-pressed={model.id === modelId}
+                    onClick={() => setModelId(model.id)}
+                  >
+                    {model.rateCard.version}
+                  </button>
+                ))}
+              </div>
             </section>
           )}
           <section className="card controls-card">
@@ -242,7 +241,6 @@ export function App() {
                     })
                   }
                 />
-                <small>{days} days</small>
               </label>
               <label className="control">
                 <span>Total credits</span>

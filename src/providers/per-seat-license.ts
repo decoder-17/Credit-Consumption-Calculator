@@ -14,7 +14,11 @@ export function createPerSeatLicenseProvider(rateCard: PerSeatLicenseRateCard = 
       const amount = perSeat(quantity, rateCard.ratePerSeat).amount;
       return { total: amount, unit: "USD", lines: [{ usageTypeId: "seats", quantity, amount }] };
     },
-    disclaimers: ["[NEEDS DATA: vendor name and non-affiliation disclaimer]", "[NEEDS DATA: plan-specific pricing disclaimer]"],
+    disclaimers: [
+      "This estimate is for planning only, not a billing statement. Final charges may differ because contract terms, overage rates, taxes, fees, or other charges may not be included.",
+      "[NEEDS DATA: vendor name and non-affiliation disclaimer]",
+      "[NEEDS DATA: plan-specific pricing disclaimer]",
+    ],
   };
 }
 

@@ -18,6 +18,7 @@ export const muleSoftProvider: PricingProvider = {
     return { total: lines.reduce((total, line) => total + line.amount, 0), unit: "Mule Credits", lines };
   },
   disclaimers: [
+    "This estimate is for planning only, not a billing statement. Final charges may differ because contract terms, overage rates, taxes, fees, or other charges may not be included.",
     "Rates are plan-specific and may change. Verify the current rate card and Order Form with your account team.",
     "Enter billable units from Anypoint Usage Reports; this tool does not reproduce raw-to-billable aggregation.",
     "The Digital Wallet is the billing source of truth. Mule Credits do not roll over past the Order End Date.",

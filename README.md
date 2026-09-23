@@ -16,7 +16,7 @@ The provider contract is the extension point. A provider supplies identity, unit
 
 ## Current data status
 
-MuleSoft Mule Credits is ported from the original HTML calculator. Its May 2026 source and values are preserved in `src/rate-cards/mulesoft-mule-credits.ts`, and the legacy example total is locked by a test.
+MuleSoft Mule Credits is ported from the original HTML calculator. Its May 2026 source and values are preserved in `src/rate-cards/mulesoft-mule-credits.ts`, and the legacy example total is locked by a test. The provider also links the MuleSoft usage documentation for Mule Credits and Automation Credits; usage types depend on the customer subscription plan, so plan-specific meter selection remains an explicit data-model follow-up rather than an inferred default.
 
 The flat per-seat provider proves the second pricing shape, but it is intentionally not priceable in production yet. The request did not include a vendor, rate, effective date, or source URL. It displays `[NEEDS DATA: ...]` and throws rather than inventing a price.
 

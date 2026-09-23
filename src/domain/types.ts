@@ -13,6 +13,7 @@ export type RateCardMeta = {
   version: string;
   effectiveDate: string;
   sourceUrl: string;
+  documentationUrls?: readonly string[];
 };
 
 export type TierBreakdown = {

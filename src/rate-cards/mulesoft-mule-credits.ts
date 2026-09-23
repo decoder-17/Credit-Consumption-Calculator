@@ -4,6 +4,10 @@ export const muleSoftRateCard = {
   version: "May 2026",
   effectiveDate: "2026-05-01",
   sourceUrl: "https://www.salesforce.com/en-us/wp-content/uploads/sites/4/documents/mulesoft/Mule_Credit_Rate_Card.pdf",
+  documentationUrls: [
+    "https://docs.mulesoft.com/general/mule-credits-usage-and-rates",
+    "https://docs.mulesoft.com/general/automation-credits-usage-and-rates",
+  ],
   thresholds: [300000, 900000, 5000000, null] as const,
   usageTypes: [
     { id: "flows", label: "MuleSoft Flows", basis: "per flow", unitsPerBlock: 1, rates: [200, 120, 48, 19.2], exampleQuantity: 800 },

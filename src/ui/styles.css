@@ -26,12 +26,13 @@ body {
 .app-shell {
   min-height: 100vh;
   display: flex;
+  background: #eef3fc;
 }
 .sidebar {
   width: 158px;
   flex: 0 0 158px;
-  background: #fff;
-  border-right: 1px solid var(--line);
+  background: #eef3fc;
+  border-right: 0;
   padding: 16px 10px;
 }
 .sidebar-brand {
@@ -86,11 +87,12 @@ body {
 .workspace {
   flex: 1;
   min-width: 0;
+  background: #eef3fc;
 }
 .topbar {
-  background: #fff;
-  border-bottom: 1px solid var(--line);
-  box-shadow: 0 1px 3px #182b4a12;
+  background: transparent;
+  border-bottom: 0;
+  box-shadow: none;
   min-height: 62px;
   padding: 14px 22px;
   display: flex;
@@ -494,7 +496,7 @@ tfoot td {
     display: block;
   }
   .sidebar {
-    border-bottom: 1px solid var(--line);
+    border-bottom: 0;
     border-right: 0;
     padding: 14px 16px;
     width: 100%;

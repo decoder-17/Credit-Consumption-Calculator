@@ -144,6 +144,16 @@ export function App() {
       },
     });
   }
+  function removeMonth(period: string) {
+    const months = { ...account.months };
+    delete months[period];
+    updateAccount({ ...account, months });
+  }
+  const savedPeriods = Object.keys(account.months).sort();
+  const savedTotal = Object.values(account.months).reduce(
+    (sum, month) => sum + month.credits,
+    0,
+  );
   function downloadCsv() {
     const rows = [
       ["Credit Consumption Calculator"],
@@ -173,7 +183,6 @@ export function App() {
     const link = document.createElement("a");
     link.href = url;
     link.download = `credit-consumption-${account.period.replace("-", "")}.csv`;
-    link.click();
     URL.revokeObjectURL(url);
   }
   return (
@@ -463,7 +472,75 @@ export function App() {
                 Download CSV
               </button>
             </div>
-            <p className="empty">Saved months persist in this browser.</p>
+            <div className="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th className="left">Month</th>
+                    <th>Days</th>
+                    <th>Credits</th>
+                    <th>Cumulative</th>
+                    <th>Saved</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {savedPeriods.length === 0 ? (
+                    <tr>
+                      <td className="empty left" colSpan={6}>
+                        No saved months yet. Enter usage above and press Save
+                        month.
+                      </td>
+                    </tr>
+                  ) : (
+                    savedPeriods.map((period, index) => {
+                      const month = account.months[period];
+                      const cumulative = savedPeriods
+                        .slice(0, index + 1)
+                        .reduce(
+                          (sum, key) => sum + account.months[key].credits,
+                          0,
+                        );
+                      return (
+                        <tr key={period}>
+                          <td className="left">
+                            <strong>{monthName(period)}</strong>
+                          </td>
+                          <td>{month.days}</td>
+                          <td>{formatNumber(month.credits)}</td>
+                          <td>{formatNumber(cumulative)}</td>
+                          <td>
+                            {new Date(month.savedAt).toLocaleDateString(
+                              "en-GB",
+                              { day: "2-digit", month: "short" },
+                            )}
+                          </td>
+                          <td>
+                            <button
+                              className="remove-button"
+                              type="button"
+                              onClick={() => removeMonth(period)}
+                            >
+                              Remove
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td className="left">Saved total</td>
+                    <td />
+                    <td>{formatNumber(savedTotal)}</td>
+                    <td />
+                    <td />
+                    <td />
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </section>
           <section className="terms">
             <h2>Rate card and terms</h2>

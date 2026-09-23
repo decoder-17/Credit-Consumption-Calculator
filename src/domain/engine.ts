@@ -1,6 +1,9 @@
 import type { PriceLine, PriceResult, PricingProvider } from "./types";
 
-export function priceProvider(provider: PricingProvider, input: Record<string, number>): PriceResult {
+export function priceProvider(
+  provider: PricingProvider,
+  input: Record<string, number>,
+): PriceResult {
   return provider.price(input);
 }
 

@@ -1,9 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { committedWithOverage, flatPerUnit, freeTierThenOverage, graduatedTiers, perSeat } from "./strategies";
+import {
+  committedWithOverage,
+  flatPerUnit,
+  freeTierThenOverage,
+  graduatedTiers,
+  perSeat,
+} from "./strategies";
 
 describe("pricing strategies", () => {
   it("prices graduated tiers at boundaries", () => {
-    const config = { unitsPerBlock: 1, tiers: [{ upToCredits: 10, creditsPerUnit: 2 }, { upToCredits: 20, creditsPerUnit: 1 }, { upToCredits: null, creditsPerUnit: 0.5 }] };
+    const config = {
+      unitsPerBlock: 1,
+      tiers: [
+        { upToCredits: 10, creditsPerUnit: 2 },
+        { upToCredits: 20, creditsPerUnit: 1 },
+        { upToCredits: null, creditsPerUnit: 0.5 },
+      ],
+    };
     expect(graduatedTiers(0, config).amount).toBe(0);
     expect(graduatedTiers(5, config).amount).toBe(10);
     expect(graduatedTiers(15, config).amount).toBe(20);

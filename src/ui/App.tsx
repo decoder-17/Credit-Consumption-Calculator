@@ -202,6 +202,22 @@ export function App() {
             </button>
           ))}
         </nav>
+        <div className="sidebar-links">
+          <a
+            href="https://anypoint.mulesoft.com/usage-reports/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Anypoint Usage Reports
+          </a>
+          <a
+            href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_access.htm&type=5"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Salesforce Digital Wallet
+          </a>
+        </div>
       </aside>
       <main className="workspace">
         <header className="topbar">

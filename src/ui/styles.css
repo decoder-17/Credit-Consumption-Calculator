@@ -34,7 +34,10 @@ body {
   flex: 0 0 158px;
   background: #fff;
   border-right: 0;
-  padding: 14px 8px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 .sidebar-brand {
   display: flex;
@@ -56,6 +59,39 @@ body {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
+}
+.sidebar-links {
+  display: grid;
+  gap: 8px;
+  margin-top: auto;
+  padding: 14px 8px 2px;
+  border-top: 1px solid var(--line);
+}
+.sidebar-links a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #596579;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-decoration: none;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.sidebar-links a::before {
+  content: "↗";
+  color: #697586;
+  font-size: 11px;
+}
+.sidebar-links a:hover {
+  background: #f1f5fc;
+  color: var(--blue);
+}
+.sidebar-links a:focus-visible {
+  outline: 2px solid #1b96ff;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 .nav-item {
   border: 0;
@@ -94,15 +130,15 @@ body {
   background: #fff;
   border-bottom: 0;
   box-shadow: none;
-  min-height: 58px;
-  padding: 12px 12px;
+  min-height: 40px;
+  padding: 8px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
 }
 .topbar h1 {
-  font-size: 20px;
+  font-size: 17px;
   line-height: 1.2;
   margin: 0;
   font-weight: 700;
@@ -110,7 +146,7 @@ body {
 .workspace-content {
   max-width: 1160px;
   margin: auto;
-  padding: 10px 12px 48px;
+  padding: 8px 10px 48px;
 }
 .card {
   background: var(--panel);
@@ -501,6 +537,7 @@ tfoot td {
     border-right: 0;
     padding: 14px 16px;
     width: 100%;
+    min-height: 0;
   }
   .subscription-nav {
     display: flex;
@@ -508,6 +545,12 @@ tfoot td {
     gap: 6px;
     margin-top: 16px;
     overflow-x: auto;
+  }
+  .sidebar-links {
+    display: flex;
+    gap: 14px;
+    margin-top: 12px;
+    padding: 10px 0 0;
   }
   .subscription-nav h2 {
     display: none;

@@ -709,6 +709,23 @@ tfoot td {
 .app-footer a:hover {
   text-decoration: underline;
 }
+.footer-social {
+  display: inline-flex;
+  gap: 8px;
+  margin: 0 8px;
+  vertical-align: -3px;
+}
+.footer-social a {
+  display: inline-flex;
+  color: var(--text-2);
+}
+.footer-social a:hover {
+  color: var(--blue);
+}
+.footer-social svg {
+  width: 15px;
+  height: 15px;
+}
 .app-footer a:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 2px;

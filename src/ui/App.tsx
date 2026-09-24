@@ -5,6 +5,7 @@ import {
   type UsageType,
 } from "../domain";
 import { defaultProviderId, providerRegistry } from "../app/registry";
+import { BoltIcon, ExternalLinkIcon, FlowIcon } from "./icons";
 
 const nf = new Intl.NumberFormat("en-US");
 const storagePrefix = "credit-consumption-calc-v2";
@@ -188,23 +189,49 @@ export function App() {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <div className="sidebar-brand">Credit Consumption Calculator</div>
+        <div className="sidebar-brand">
+          <span className="brand-name">Credit Consumption Calculator</span>
+        </div>
         <nav className="subscription-nav" aria-label="Subscriptions">
           <h2>Subscriptions</h2>
-          {[...providerRegistry.values()].map((item) => (
-            <button
-              className={`nav-item${item.id === provider.id ? " active" : ""}`}
-              type="button"
-              key={item.id}
-              onClick={() => setProviderId(item.id)}
-            >
-              {item.displayName}
-            </button>
-          ))}
+          {[...providerRegistry.values()].map((item) => {
+            const ItemIcon = item.id.includes("automation")
+              ? BoltIcon
+              : FlowIcon;
+            return (
+              <button
+                className={`nav-item${item.id === provider.id ? " active" : ""}`}
+                type="button"
+                key={item.id}
+                onClick={() => setProviderId(item.id)}
+              >
+                <ItemIcon width={16} height={16} />
+                <span>{item.displayName}</span>
+              </button>
+            );
+          })}
         </nav>
+        <div className="sidebar-links">
+          <a
+            href="https://anypoint.mulesoft.com/usage-reports/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <ExternalLinkIcon width={14} height={14} />
+            <span>Anypoint Usage Reports</span>
+          </a>
+          <a
+            href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_access.htm&type=5"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <ExternalLinkIcon width={14} height={14} />
+            <span>Salesforce Digital Wallet</span>
+          </a>
+        </div>
       </aside>
       <main className="workspace">
-        <header className="topbar">
+        <header className="page-header">
           <h1>{provider.displayName}</h1>
         </header>
         <div className="workspace-content">
@@ -235,8 +262,8 @@ export function App() {
               </div>
             </section>
           )}
-          <section className="card controls-card">
-            <div className="controls">
+          <div className="controls-grid">
+            <section className="card control-card">
               <label className="control">
                 <span>Calculation month</span>
                 <input
@@ -251,6 +278,8 @@ export function App() {
                   }
                 />
               </label>
+            </section>
+            <section className="card control-card">
               <label className="control">
                 <span>Total credits</span>
                 <input
@@ -265,6 +294,8 @@ export function App() {
                   }
                 />
               </label>
+            </section>
+            <section className="card control-card">
               <label className="control">
                 <span>Consumed credits</span>
                 <input
@@ -279,6 +310,8 @@ export function App() {
                   }
                 />
               </label>
+            </section>
+            <section className="card control-card">
               <label className="control">
                 <span>Order End Date</span>
                 <input
@@ -289,8 +322,8 @@ export function App() {
                   }
                 />
               </label>
-            </div>
-          </section>
+            </section>
+          </div>
           <section className="card summary-card">
             <div className="card-heading">
               <h2>Utilization summary</h2>
@@ -544,17 +577,36 @@ export function App() {
           </section>
           <section className="terms">
             <h2>Rate card and terms</h2>
-            <p>
-              Rate card:{" "}
-              <a href={profile.rateCard.sourceUrl}>
-                {profile.rateCard.sourceUrl}
-              </a>
+            <p className="terms-summary">
+              <strong>For calculation purposes only.</strong> This tool produces
+              estimates to help you plan credit usage. It is not a billing
+              statement, contract, or legal document, and no legal or financial
+              liability is accepted for decisions made using these figures —
+              always verify against your official rate card, Order Form, and
+              account team.
             </p>
-            {profile.rateCard.documentationUrls?.map((url) => (
-              <p key={url}>
-                Documentation: <a href={url}>{url}</a>
-              </p>
-            ))}
+            <p className="terms-links">
+              References:{" "}
+              <a
+                href={profile.rateCard.sourceUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Official rate card
+              </a>
+              {profile.rateCard.documentationUrls?.map((url, index) => (
+                <span key={url}>
+                  {" "}
+                  ·{" "}
+                  <a href={url} target="_blank" rel="noreferrer">
+                    Documentation
+                    {profile.rateCard.documentationUrls!.length > 1
+                      ? ` ${index + 1}`
+                      : ""}
+                  </a>
+                </span>
+              ))}
+            </p>
             {profile.disclaimers.map((disclaimer) => (
               <p key={disclaimer}>{disclaimer}</p>
             ))}

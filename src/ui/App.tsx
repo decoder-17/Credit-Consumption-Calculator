@@ -766,6 +766,7 @@ export function App() {
               </span>
               <span className="footer-social">
                 <a
+                  className="social-github"
                   href="https://github.com/decoder-17"
                   target="_blank"
                   rel="noreferrer"

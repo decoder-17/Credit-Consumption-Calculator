@@ -747,6 +747,10 @@ tfoot td {
   background: var(--blue);
   color: #fff;
 }
+.footer-social a.social-github:hover {
+  border-color: #1f2328;
+  background: #1f2328;
+}
 .footer-social svg {
   width: 14px;
   height: 14px;

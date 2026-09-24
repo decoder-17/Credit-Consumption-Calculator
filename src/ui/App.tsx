@@ -758,13 +758,14 @@ export function App() {
             </div>
           </section>
           <footer className="app-footer">
-            Developed by Tanupam Saha ·{" "}
+            Developed by{" "}
             <a
               href="https://github.com/decoder-17"
               target="_blank"
               rel="noreferrer"
+              title="GitHub @decoder-17"
             >
-              GitHub @decoder-17
+              Tanupam Saha
             </a>{" "}
             · © 2026 ·{" "}
             <a

@@ -12,7 +12,9 @@ import {
   ClockIcon,
   ExternalLinkIcon,
   FlowIcon,
+  GitHubIcon,
   InfoIcon,
+  LinkedInIcon,
   TrendIcon,
 } from "./icons";
 
@@ -758,15 +760,27 @@ export function App() {
             </div>
           </section>
           <footer className="app-footer">
-            Developed by{" "}
-            <a
-              href="https://github.com/decoder-17"
-              target="_blank"
-              rel="noreferrer"
-              title="GitHub @decoder-17"
-            >
-              Tanupam Saha
-            </a>{" "}
+            Developed by Tanupam
+            <span className="footer-social">
+              <a
+                href="https://github.com/decoder-17"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub profile"
+                title="GitHub"
+              >
+                <GitHubIcon />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/int-tanupam/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="LinkedIn profile"
+                title="LinkedIn"
+              >
+                <LinkedInIcon />
+              </a>
+            </span>
             · © 2026 ·{" "}
             <a
               href="https://github.com/decoder-17/Credit-Consumption-Calculator/blob/main/LICENSE"

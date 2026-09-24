@@ -760,15 +760,15 @@ export function App() {
           <footer className="app-footer">
             Developed by Tanupam Saha ·{" "}
             <a
-              href="https://github.com/tanupam-CCI"
+              href="https://github.com/decoder-17"
               target="_blank"
               rel="noreferrer"
             >
-              GitHub @tanupam-CCI
+              GitHub @decoder-17
             </a>{" "}
             · © 2026 ·{" "}
             <a
-              href="https://github.com/tanupam-CCI/Credit-Consumption-Calculator/blob/main/LICENSE"
+              href="https://github.com/decoder-17/Credit-Consumption-Calculator/blob/main/LICENSE"
               target="_blank"
               rel="noreferrer"
             >

@@ -9,17 +9,21 @@ export type AutomationRateCard = RateCardMeta & {
     basis: string;
     rate: number;
     inputBasis: "month";
+    exampleQuantity?: number;
   }[];
 };
 
 export const automationRateCards: readonly AutomationRateCard[] = [
   {
     version: "1.0",
-    effectiveDate: "[NEEDS DATA: effective date not stated in documentation]",
+    effectiveDate: "",
     sourceUrl:
       "https://docs.mulesoft.com/general/mulesoft-automation-credits-1-0",
     documentationUrls: [
-      "https://docs.mulesoft.com/general/automation-credits-usage-and-rates",
+      {
+        label: "Automation Credits Usage & Rates",
+        url: "https://docs.mulesoft.com/general/automation-credits-usage-and-rates",
+      },
     ],
     pricingMode: "units-per-credit",
     usageTypes: [
@@ -29,6 +33,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per 2 minutes",
         rate: 2,
         inputBasis: "month",
+        exampleQuantity: 12000,
       },
       {
         id: "rpa-api-calls",
@@ -36,6 +41,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per 100 calls",
         rate: 100,
         inputBasis: "month",
+        exampleQuantity: 5000,
       },
       {
         id: "composer-tasks",
@@ -43,6 +49,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per 50 tasks",
         rate: 50,
         inputBasis: "month",
+        exampleQuantity: 20000,
       },
       {
         id: "idp-document-pages",
@@ -50,16 +57,20 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per 5 pages",
         rate: 5,
         inputBasis: "month",
+        exampleQuantity: 3000,
       },
     ],
   },
   {
     version: "2.0",
-    effectiveDate: "[NEEDS DATA: effective date not stated in documentation]",
+    effectiveDate: "",
     sourceUrl:
       "https://docs.mulesoft.com/general/mulesoft-automation-credits-2-0",
     documentationUrls: [
-      "https://docs.mulesoft.com/general/automation-credits-usage-and-rates",
+      {
+        label: "Automation Credits Usage & Rates",
+        url: "https://docs.mulesoft.com/general/automation-credits-usage-and-rates",
+      },
     ],
     pricingMode: "credits-per-unit",
     usageTypes: [
@@ -69,6 +80,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per minute",
         rate: 80,
         inputBasis: "month",
+        exampleQuantity: 12000,
       },
       {
         id: "rpa-api-calls",
@@ -76,6 +88,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per call",
         rate: 2,
         inputBasis: "month",
+        exampleQuantity: 5000,
       },
       {
         id: "composer-tasks",
@@ -83,6 +96,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per task",
         rate: 2,
         inputBasis: "month",
+        exampleQuantity: 20000,
       },
       {
         id: "flow-orchestration-runs",
@@ -90,6 +104,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per run",
         rate: 100,
         inputBasis: "month",
+        exampleQuantity: 500,
       },
       {
         id: "idp-document-pages",
@@ -97,6 +112,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per page",
         rate: 30,
         inputBasis: "month",
+        exampleQuantity: 3000,
       },
       {
         id: "integration-tasks",
@@ -104,16 +120,20 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per task",
         rate: 2,
         inputBasis: "month",
+        exampleQuantity: 25000,
       },
     ],
   },
   {
     version: "3.0",
-    effectiveDate: "[NEEDS DATA: effective date not stated in documentation]",
+    effectiveDate: "",
     sourceUrl:
       "https://docs.mulesoft.com/general/mulesoft-automation-credits-3-0",
     documentationUrls: [
-      "https://docs.mulesoft.com/general/automation-credits-usage-and-rates",
+      {
+        label: "Automation Credits Usage & Rates",
+        url: "https://docs.mulesoft.com/general/automation-credits-usage-and-rates",
+      },
     ],
     pricingMode: "credits-per-unit",
     usageTypes: [
@@ -123,6 +143,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per successful task",
         rate: 2,
         inputBasis: "month",
+        exampleQuantity: 25000,
       },
       {
         id: "idp-document-pages",
@@ -130,6 +151,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "per page",
         rate: 30,
         inputBasis: "month",
+        exampleQuantity: 3000,
       },
       {
         id: "flow-orchestration-runs",
@@ -137,6 +159,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         basis: "included for Enterprise and higher editions",
         rate: 0,
         inputBasis: "month",
+        exampleQuantity: 500,
       },
     ],
   },

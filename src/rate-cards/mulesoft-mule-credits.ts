@@ -6,8 +6,14 @@ export const muleSoftRateCard = {
   sourceUrl:
     "https://www.salesforce.com/en-us/wp-content/uploads/sites/4/documents/mulesoft/Mule_Credit_Rate_Card.pdf",
   documentationUrls: [
-    "https://docs.mulesoft.com/general/mule-credits-usage-and-rates",
-    "https://docs.mulesoft.com/general/automation-credits-usage-and-rates",
+    {
+      label: "Mule Credits Usage & Rates",
+      url: "https://docs.mulesoft.com/general/mule-credits-usage-and-rates",
+    },
+    {
+      label: "Automation Credits Usage & Rates",
+      url: "https://docs.mulesoft.com/general/automation-credits-usage-and-rates",
+    },
   ],
   thresholds: [300000, 900000, 5000000, null] as const,
   usageTypes: [

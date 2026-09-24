@@ -46,4 +46,4 @@ npm run ci
 
 ## Public deployment
 
-GitHub Actions deploys `main` as the production site through `.github/workflows/deploy.yml`. Feature branches run CI and are promoted through `develop` into `main` after review. Enable **Settings > Pages > Build and deployment > Source: GitHub Actions** once in the repository. With the current repository name, the default public URL is `https://tanupam-CCI.github.io/Credit-Consumption-Calculator/`.
+GitHub Actions deploys `main` as the production site through `.github/workflows/deploy.yml`. Feature branches run CI and are promoted through `develop` into `main` after review. Enable **Settings > Pages > Build and deployment > Source: GitHub Actions** once in the repository. With the current repository name, the default public URL is `https://decoder-17.github.io/Credit-Consumption-Calculator/`.

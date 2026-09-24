@@ -1,5 +1,4 @@
 export type PricingUnit = "Mule Credits" | "USD" | "seats";
-export type CurrencyCode = "USD";
 
 export type UsageType = {
   id: string;

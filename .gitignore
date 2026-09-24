@@ -26,6 +26,7 @@ pnpm-debug.log*
 .AppleDouble
 .LSOverride
 
-# Local editor settings (keep the shared workspace settings tracked)
-.vscode/*
-!.vscode/settings.json
+# Local editor and assistant settings
+.vscode/
+.idea/
+.claude/

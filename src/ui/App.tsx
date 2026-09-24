@@ -5,7 +5,16 @@ import {
   type UsageType,
 } from "../domain";
 import { defaultProviderId, providerRegistry } from "../app/registry";
-import { BoltIcon, ExternalLinkIcon, FlowIcon } from "./icons";
+import {
+  ArchiveIcon,
+  BoltIcon,
+  CalendarIcon,
+  ClockIcon,
+  ExternalLinkIcon,
+  FlowIcon,
+  InfoIcon,
+  TrendIcon,
+} from "./icons";
 
 const nf = new Intl.NumberFormat("en-US");
 const storagePrefix = "credit-consumption-calc-v2";
@@ -50,6 +59,21 @@ function monthName(period: string): string {
 }
 function formatNumber(value: number): string {
   return nf.format(Math.round(value));
+}
+function formatIsoDate(value: string): string | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  return new Date(`${value}T00:00:00`).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+function KpiInfo({ text }: { text: string }) {
+  return (
+    <span className="kpi-info" title={text} role="img" aria-label={text}>
+      <InfoIcon width={12} height={12} />
+    </span>
+  );
 }
 function readAccount(key: string): Account {
   try {
@@ -120,7 +144,7 @@ export function App() {
         error:
           cause instanceof MissingRateDataError
             ? cause.message
-            : "[NEEDS DATA: pricing could not be calculated]",
+            : "Pricing could not be calculated for this input. Check your rate card configuration.",
       };
     }
   }
@@ -130,6 +154,17 @@ export function App() {
   const utilization = account.total
     ? (account.consumed + total) / account.total
     : 0;
+  const creditsByBasis = usageTypes.reduce(
+    (sums, item) => {
+      const amount =
+        priced.result?.lines.find((line) => line.usageTypeId === item.id)
+          ?.amount ?? 0;
+      if (item.inputBasis === "day") sums.day += amount;
+      else sums.month += amount;
+      return sums;
+    },
+    { day: 0, month: 0 },
+  );
   function saveMonth() {
     if (!priced.result || !account.period) return;
     updateAccount({
@@ -156,16 +191,17 @@ export function App() {
     0,
   );
   function downloadCsv() {
-    const rows = [
+    const rows: (string | number)[][] = [
       ["Credit Consumption Calculator"],
+      ["Subscription", profile.displayName],
       ["Month", monthName(account.period)],
-      ["Total credits", account.total],
-      ["Consumed to date", account.consumed],
+      ["Total Credits", account.total],
+      ["Consumed To Date", account.consumed],
       ["Calculated", total],
       ["Remaining", remaining],
       ["Order End Date", account.endDate],
       [],
-      ["Usage type", "Input", "Monthly units", "Credits"],
+      ["Usage Type", "Input", "Monthly Units", "Credits"],
     ];
     usageTypes.forEach((item) => {
       const input = account.inputs[item.id] ?? 0;
@@ -177,14 +213,28 @@ export function App() {
           ?.amount ?? 0,
       ]);
     });
-    const blob = new Blob([rows.map((row) => row.join(",")).join("\n")], {
-      type: "text/csv",
+    rows.push([], ["Saved Ledger"], ["Month", "Days", "Credits", "Cumulative"]);
+    let cumulative = 0;
+    savedPeriods.forEach((period) => {
+      const month = account.months[period];
+      cumulative += month.credits;
+      rows.push([monthName(period), month.days, month.credits, cumulative]);
     });
+    rows.push(["Saved Total", "", savedTotal, ""]);
+    const escape = (value: string | number) => {
+      const text = String(value);
+      return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+    };
+    const csv = rows.map((row) => row.map(escape).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
     link.download = `credit-consumption-${account.period.replace("-", "")}.csv`;
-    URL.revokeObjectURL(url);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
   }
   return (
     <div className="app-shell">
@@ -205,7 +255,7 @@ export function App() {
                 key={item.id}
                 onClick={() => setProviderId(item.id)}
               >
-                <ItemIcon width={16} height={16} />
+                <ItemIcon width={18} height={18} />
                 <span>{item.displayName}</span>
               </button>
             );
@@ -234,152 +284,224 @@ export function App() {
         <header className="page-header">
           <h1>{provider.displayName}</h1>
         </header>
-        <div className="workspace-content">
-          {provider.models && (
-            <section
-              className="card model-card"
-              aria-labelledby="credit-system-label"
-            >
-              <div className="model-label" id="credit-system-label">
-                Credit system
-              </div>
-              <div
-                className="model-switcher"
-                role="group"
-                aria-labelledby="credit-system-label"
-              >
-                {provider.models.map((model) => (
-                  <button
-                    className={model.id === modelId ? "selected" : ""}
-                    key={model.id}
-                    type="button"
-                    aria-pressed={model.id === modelId}
-                    onClick={() => setModelId(model.id)}
-                  >
-                    {model.rateCard.version}
-                  </button>
-                ))}
-              </div>
-            </section>
-          )}
-          <div className="controls-grid">
-            <section className="card control-card">
-              <label className="control">
-                <span>Calculation month</span>
-                <input
-                  type="month"
-                  value={account.period}
-                  onChange={(event) =>
-                    updateAccount({
-                      ...account,
-                      period: event.target.value,
-                      inputs: account.months[event.target.value]?.inputs ?? {},
-                    })
-                  }
-                />
-              </label>
-            </section>
-            <section className="card control-card">
-              <label className="control">
-                <span>Total credits</span>
-                <input
-                  type="number"
-                  min="0"
-                  value={account.total}
-                  onChange={(event) =>
-                    updateAccount({
-                      ...account,
-                      total: Math.max(0, Number(event.target.value) || 0),
-                    })
-                  }
-                />
-              </label>
-            </section>
-            <section className="card control-card">
-              <label className="control">
-                <span>Consumed credits</span>
-                <input
-                  type="number"
-                  min="0"
-                  value={account.consumed}
-                  onChange={(event) =>
-                    updateAccount({
-                      ...account,
-                      consumed: Math.max(0, Number(event.target.value) || 0),
-                    })
-                  }
-                />
-              </label>
-            </section>
-            <section className="card control-card">
-              <label className="control">
-                <span>Order End Date</span>
-                <input
-                  type="date"
-                  value={account.endDate}
-                  onChange={(event) =>
-                    updateAccount({ ...account, endDate: event.target.value })
-                  }
-                />
-              </label>
-            </section>
-          </div>
-          <section className="card summary-card">
-            <div className="card-heading">
-              <h2>Utilization summary</h2>
-            </div>
-            <div className="summary-row">
-              <div>
-                <strong
-                  className={
-                    remaining < 0
-                      ? "negative"
-                      : utilization >= 0.85
-                        ? "warning"
-                        : ""
-                  }
+        <div className="canvas">
+          <section className="band" aria-labelledby="overview-title">
+            <h2 className="band-title" id="overview-title">
+              Utilization Overview
+            </h2>
+            <div className="kpi-grid">
+              <article className="card kpi-card">
+                <h3 className="kpi-title">
+                  Credits Remaining
+                  <KpiInfo text="Total credits minus consumed credits and this month's calculated usage." />
+                </h3>
+                <p
+                  className={`kpi-value${remaining < 0 ? " negative" : utilization >= 0.85 ? " warning" : ""}`}
                 >
                   {formatNumber(remaining)}
-                </strong>
-                <span>credits remaining</span>
-              </div>
-              <dl>
-                <div>
-                  <dt>Calculated · {monthName(account.period)}</dt>
-                  <dd>{formatNumber(total)}</dd>
+                </p>
+                <p className="kpi-subtitle">
+                  {account.total
+                    ? `Of ${formatNumber(account.total)} total credits`
+                    : "Enter your total credits below"}
+                </p>
+                <div className="gauge">
+                  <span
+                    style={{
+                      width: `${account.total ? Math.min(account.consumed / account.total, 1) * 100 : 0}%`,
+                    }}
+                  />
+                  <span
+                    className="pending"
+                    style={{
+                      width: `${account.total ? Math.min(total / account.total, 1) * 100 : 0}%`,
+                    }}
+                  />
                 </div>
-                <div>
-                  <dt>Consumed to date</dt>
-                  <dd>{formatNumber(account.consumed)}</dd>
+                <div className="kpi-footer">
+                  <div className="kpi-chips">
+                    <span className="kpi-chip">
+                      <span className="chip-dot consumed" />
+                      {formatNumber(account.consumed)} consumed
+                    </span>
+                    <span className="kpi-chip">
+                      <span className="chip-dot pending" />
+                      {formatNumber(total)} this month
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <dt>Contract remaining</dt>
-                  <dd>{contractRemaining(account.endDate)}</dd>
+              </article>
+              <article className="card kpi-card">
+                <h3 className="kpi-title">
+                  Calculated This Month
+                  <KpiInfo text="Credits calculated from the usage entered for the selected month." />
+                </h3>
+                <p className="kpi-value">{formatNumber(total)}</p>
+                <p className="kpi-subtitle">
+                  {monthName(account.period)} · {days} days
+                </p>
+                <div className="kpi-footer">
+                  <div className="kpi-chips">
+                    {usageTypes.some((item) => item.inputBasis === "day") && (
+                      <span className="kpi-chip">
+                        <ClockIcon className="chip-icon day" />
+                        {formatNumber(creditsByBasis.day)} Per Day
+                      </span>
+                    )}
+                    {usageTypes.some((item) => item.inputBasis !== "day") && (
+                      <span className="kpi-chip">
+                        <CalendarIcon className="chip-icon month" />
+                        {formatNumber(creditsByBasis.month)} Per Month
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </dl>
+              </article>
+              <article className="card kpi-card">
+                <h3 className="kpi-title">
+                  Consumed To Date
+                  <KpiInfo text="Credits already consumed before the selected month." />
+                </h3>
+                <p className="kpi-value">{formatNumber(account.consumed)}</p>
+                <p className="kpi-subtitle">
+                  {account.total
+                    ? `${((account.consumed / account.total) * 100).toFixed(1)}% of total credits`
+                    : "No total credits entered"}
+                </p>
+                <div className="kpi-footer">
+                  <div className="kpi-chips">
+                    <span className="kpi-chip">
+                      <TrendIcon className="chip-icon trend" />
+                      {(utilization * 100).toFixed(1)}% including this month
+                    </span>
+                  </div>
+                </div>
+              </article>
+              <article className="card kpi-card">
+                <h3 className="kpi-title">
+                  Contract Remaining
+                  <KpiInfo text="Days left until the Order End Date." />
+                </h3>
+                <p className="kpi-value">
+                  {contractRemaining(account.endDate)}
+                </p>
+                <p className="kpi-subtitle">
+                  {account.endDate
+                    ? `Order ends ${formatIsoDate(account.endDate)}`
+                    : "No Order End Date set"}
+                </p>
+                <div className="kpi-footer">
+                  <div className="kpi-chips">
+                    <span className="kpi-chip">
+                      <ArchiveIcon className="chip-icon saved" />
+                      {savedPeriods.length}{" "}
+                      {savedPeriods.length === 1 ? "month" : "months"} saved
+                    </span>
+                  </div>
+                </div>
+              </article>
             </div>
-            <div className="gauge">
-              <span
-                style={{
-                  width: `${account.total ? Math.min(account.consumed / account.total, 1) * 100 : 0}%`,
-                }}
-              />
-              <span
-                className="pending"
-                style={{
-                  width: `${account.total ? Math.min(total / account.total, 1) * 100 : 0}%`,
-                }}
-              />
+          </section>
+          <section className="band" aria-labelledby="contract-title">
+            <div className="band-heading">
+              <h2 className="band-title" id="contract-title">
+                Contract Details
+              </h2>
+              {provider.models && (
+                <div className="model-picker">
+                  <span className="model-label" id="credit-system-label">
+                    Credit System
+                  </span>
+                  <div
+                    className="model-switcher"
+                    role="group"
+                    aria-labelledby="credit-system-label"
+                  >
+                    {provider.models.map((model) => (
+                      <button
+                        className={model.id === modelId ? "selected" : ""}
+                        key={model.id}
+                        type="button"
+                        aria-pressed={model.id === modelId}
+                        onClick={() => setModelId(model.id)}
+                      >
+                        {model.rateCard.version}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="legend">
-              <span>{formatNumber(account.consumed)} consumed</span>
-              <span>{formatNumber(total)} this month (calculated)</span>
+            <div className="controls-grid">
+              <section className="card control-card">
+                <label className="control">
+                  <span>Calculation Month</span>
+                  <input
+                    type="month"
+                    value={account.period}
+                    onChange={(event) =>
+                      updateAccount({
+                        ...account,
+                        period: event.target.value,
+                        inputs:
+                          account.months[event.target.value]?.inputs ?? {},
+                      })
+                    }
+                  />
+                </label>
+              </section>
+              <section className="card control-card">
+                <label className="control">
+                  <span>Total Credits</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={account.total || ""}
+                    placeholder="0"
+                    onChange={(event) =>
+                      updateAccount({
+                        ...account,
+                        total: Math.max(0, Number(event.target.value) || 0),
+                      })
+                    }
+                  />
+                </label>
+              </section>
+              <section className="card control-card">
+                <label className="control">
+                  <span>Consumed Credits</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={account.consumed || ""}
+                    placeholder="0"
+                    onChange={(event) =>
+                      updateAccount({
+                        ...account,
+                        consumed: Math.max(0, Number(event.target.value) || 0),
+                      })
+                    }
+                  />
+                </label>
+              </section>
+              <section className="card control-card">
+                <label className="control">
+                  <span>Order End Date</span>
+                  <input
+                    type="date"
+                    value={account.endDate}
+                    onChange={(event) =>
+                      updateAccount({ ...account, endDate: event.target.value })
+                    }
+                  />
+                </label>
+              </section>
             </div>
           </section>
           <section className="card usage-card">
             <div className="card-heading">
               <h2>
-                Usage this month{" "}
+                Usage This Month{" "}
                 <em>
                   · {monthName(account.period)} · {days} days
                 </em>
@@ -400,37 +522,37 @@ export function App() {
                     })
                   }
                 >
-                  Load example figures
+                  Load Example Figures
                 </button>
                 <button
                   className="button secondary"
                   type="button"
                   onClick={() => updateAccount({ ...account, inputs: {} })}
                 >
-                  Clear month
+                  Clear Month
                 </button>
                 <button
                   className="button primary"
                   type="button"
                   onClick={saveMonth}
                 >
-                  Save month
+                  Save Month
                 </button>
               </div>
             </div>
             <p className="basis-note">
-              <b>/day</b> meters are multiplied by the days in the selected
-              month. <b>/month</b> meters use the month's figure directly.
+              <b>Per Day</b> meters are multiplied by the days in the selected
+              month. <b>Per Month</b> meters use the month's figure directly.
             </p>
             <div className="table-scroll">
               <table>
                 <thead>
                   <tr>
-                    <th className="left">Usage type</th>
+                    <th className="left">Usage Type</th>
                     <th>Input</th>
-                    <th>Monthly units</th>
-                    <th>Top tier</th>
-                    <th>Monthly credits</th>
+                    <th>Monthly Units</th>
+                    <th>Top Tier</th>
+                    <th>Monthly Credits</th>
                     <th>Share</th>
                   </tr>
                 </thead>
@@ -460,7 +582,8 @@ export function App() {
                             className="table-input"
                             type="number"
                             min="0"
-                            value={input}
+                            value={input || ""}
+                            placeholder="0"
                             onChange={(event) =>
                               updateInput(item.id, event.target.value)
                             }
@@ -477,7 +600,7 @@ export function App() {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td className="left">Calculated · this month</td>
+                    <td className="left">Calculated · This Month</td>
                     <td />
                     <td />
                     <td />
@@ -490,13 +613,13 @@ export function App() {
           </section>
           {priced.error && (
             <section className="notice" role="alert">
-              <strong>Price unavailable</strong>
+              <strong>Price Unavailable</strong>
               <span>{priced.error}</span>
             </section>
           )}
           <section className="card ledger-card">
             <div className="card-heading">
-              <h2>Saved ledger</h2>
+              <h2>Saved Ledger</h2>
               <button
                 className="button secondary"
                 type="button"
@@ -522,7 +645,7 @@ export function App() {
                     <tr>
                       <td className="empty left" colSpan={6}>
                         No saved months yet. Enter usage above and press Save
-                        month.
+                        Month.
                       </td>
                     </tr>
                   ) : (
@@ -564,7 +687,7 @@ export function App() {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td className="left">Saved total</td>
+                    <td className="left">Saved Total</td>
                     <td />
                     <td>{formatNumber(savedTotal)}</td>
                     <td />
@@ -575,41 +698,63 @@ export function App() {
               </table>
             </div>
           </section>
-          <section className="terms">
-            <h2>Rate card and terms</h2>
-            <p className="terms-summary">
-              <strong>For calculation purposes only.</strong> This tool produces
-              estimates to help you plan credit usage. It is not a billing
-              statement, contract, or legal document, and no legal or financial
-              liability is accepted for decisions made using these figures —
-              always verify against your official rate card, Order Form, and
-              account team.
-            </p>
-            <p className="terms-links">
-              References:{" "}
+          <section className="card terms-card">
+            <div className="card-heading">
+              <h2>Rate Card And Terms</h2>
+              <span className="terms-version">
+                {profile.rateCard.version}
+                {formatIsoDate(profile.rateCard.effectiveDate) &&
+                  ` · Effective ${formatIsoDate(profile.rateCard.effectiveDate)}`}
+              </span>
+            </div>
+            <div className="terms-notice">
+              <InfoIcon width={16} height={16} />
+              <p>
+                <strong>For calculation purposes only.</strong> This tool
+                produces estimates to help you plan credit usage. It is not a
+                billing statement, contract, or legal document, and no legal or
+                financial liability is accepted for decisions made using these
+                figures — always verify against your official rate card, Order
+                Form, and account team.
+              </p>
+            </div>
+            <div className="terms-links">
               <a
+                className="terms-link"
                 href={profile.rateCard.sourceUrl}
                 target="_blank"
                 rel="noreferrer"
               >
-                Official rate card
+                <ExternalLinkIcon width={13} height={13} />
+                Official Rate Card
               </a>
-              {profile.rateCard.documentationUrls?.map((url, index) => (
-                <span key={url}>
-                  {" "}
-                  ·{" "}
-                  <a href={url} target="_blank" rel="noreferrer">
-                    Documentation
-                    {profile.rateCard.documentationUrls!.length > 1
-                      ? ` ${index + 1}`
-                      : ""}
-                  </a>
-                </span>
+              {profile.rateCard.documentationUrls?.map((doc) => (
+                <a
+                  className="terms-link"
+                  key={doc.url}
+                  href={doc.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <ExternalLinkIcon width={13} height={13} />
+                  {doc.label}
+                </a>
               ))}
-            </p>
-            {profile.disclaimers.map((disclaimer) => (
-              <p key={disclaimer}>{disclaimer}</p>
-            ))}
+            </div>
+            <ul className="terms-list">
+              {profile.disclaimers.map((disclaimer) => (
+                <li key={disclaimer}>{disclaimer}</li>
+              ))}
+            </ul>
+            <div className="terms-affiliation" role="note">
+              <InfoIcon width={16} height={16} />
+              <p>
+                <strong>Independent tool.</strong> This tool is not affiliated
+                with, endorsed by, or sponsored by MuleSoft or Salesforce.
+                MuleSoft and Salesforce are trademarks of their respective
+                owners.
+              </p>
+            </div>
           </section>
         </div>
       </main>

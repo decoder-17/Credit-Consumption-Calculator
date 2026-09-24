@@ -16,12 +16,15 @@ function createModel(rateCard: AutomationRateCard): PricingModel {
     unit: "Mule Credits",
     rateCard,
     usageTypes: () =>
-      rateCard.usageTypes.map(({ id, label, basis, inputBasis }) => ({
-        id,
-        label,
-        basis,
-        inputBasis,
-      })),
+      rateCard.usageTypes.map(
+        ({ id, label, basis, inputBasis, exampleQuantity }) => ({
+          id,
+          label,
+          basis,
+          inputBasis,
+          exampleQuantity,
+        }),
+      ),
     price: (input) => {
       const lines = rateCard.usageTypes.map((usageType) => {
         const quantity = Math.max(0, input[usageType.id] ?? 0);
@@ -48,10 +51,9 @@ function createModel(rateCard: AutomationRateCard): PricingModel {
     disclaimers: [
       "This estimate is for planning only, not a billing statement. Final charges may differ because plan terms, overage rates, taxes, fees, or other charges may not be included.",
       "Rates and available usage types depend on your subscription plan and Order Form.",
-      "This tool is not affiliated with or endorsed by MuleSoft or Salesforce.",
       ...(rateCard.version === "3.0"
         ? [
-            "[NEEDS DATA: complete 3.0 usage table and effective date for the selected subscription plan]",
+            "The 3.0 usage table and effective date are not yet fully published — confirm current rates with your account team.",
           ]
         : []),
     ],

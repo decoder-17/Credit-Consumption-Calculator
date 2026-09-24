@@ -10,11 +10,16 @@ export type UsageType = {
   exampleQuantity?: number;
 };
 
+export type DocumentationLink = {
+  label: string;
+  url: string;
+};
+
 export type RateCardMeta = {
   version: string;
   effectiveDate: string;
   sourceUrl: string;
-  documentationUrls?: readonly string[];
+  documentationUrls?: readonly DocumentationLink[];
 };
 
 export type TierBreakdown = {

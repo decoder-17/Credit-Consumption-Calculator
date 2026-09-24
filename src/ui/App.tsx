@@ -224,7 +224,8 @@ export function App() {
     });
     rows.push(["Saved Total", "", savedTotal, ""]);
     const escape = (value: string | number) => {
-      const text = String(value);
+      const rawText = String(value);
+      const text = /^[=+\-@]/.test(rawText) ? `\t${rawText}` : rawText;
       return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
     };
     const csv = rows.map((row) => row.map(escape).join(",")).join("\n");

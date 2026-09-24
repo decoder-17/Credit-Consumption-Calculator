@@ -49,13 +49,14 @@ function createModel(rateCard: AutomationRateCard): PricingModel {
       };
     },
     disclaimers: [
-      "This estimate is for planning only, not a billing statement. Final charges may differ because plan terms, overage rates, taxes, fees, or other charges may not be included.",
-      "Rates and available usage types depend on your subscription plan and Order Form.",
+      "Use this for planning. It isn't a billing statement, and your final charges can differ: plan terms, overage rates, taxes, fees and other charges may not be included.",
+      "Which usage types you get, and at what rate, depends on your subscription plan and Order Form.",
       ...(rateCard.version === "3.0"
         ? [
-            "The 3.0 usage table and effective date are not yet fully published — confirm current rates with your account team.",
+            "MuleSoft hasn't fully published the 3.0 usage table or its effective date yet. Get current rates from your account team.",
           ]
         : []),
+      "Saved months live in this browser only.",
     ],
   };
 }

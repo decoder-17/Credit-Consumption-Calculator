@@ -39,9 +39,11 @@ export const muleSoftProvider: PricingProvider = {
     };
   },
   disclaimers: [
-    "This estimate is for planning only, not a billing statement. Final charges may differ because contract terms, overage rates, taxes, fees, or other charges may not be included.",
-    "Rates are plan-specific and may change. Verify the current rate card and Order Form with your account team.",
-    "Enter billable units from Anypoint Usage Reports; this tool does not reproduce raw-to-billable aggregation.",
-    "The Digital Wallet is the billing source of truth. Mule Credits do not roll over past the Order End Date.",
+    "Use this for planning. It isn't a billing statement, and your final charges can differ: contract terms, overage rates, taxes, fees and other charges may not be included.",
+    "Each usage type is priced on a graduated scale, much like tax brackets. Its multiplier steps down every time that type's monthly credit consumption crosses a threshold, at 300K, 900K and 5M credits. Thresholds are tracked per usage type and reset on the 1st of each calendar month. The same multipliers apply across all environments (prod, pre-prod, sandbox, design).",
+    "Rates vary by plan and can change, so confirm the current rate card and your Order Form with your account team.",
+    "Pull billable units from Anypoint Usage Reports and enter those. The raw-to-billable aggregation (daily-max flows, space-days, message counts) isn't reproduced here.",
+    "If this tool and the Digital Wallet disagree, the Wallet wins. It's the billing source of truth. Mule Credits don't roll over past your Order End Date.",
+    "Saved months live in this browser only.",
   ],
 };

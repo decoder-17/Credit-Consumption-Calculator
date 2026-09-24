@@ -760,35 +760,41 @@ export function App() {
             </div>
           </section>
           <footer className="app-footer">
-            Developed by Tanupam
-            <span className="footer-social">
+            <div className="footer-credit">
+              <span>
+                Developed by <strong>Tanupam</strong>
+              </span>
+              <span className="footer-social">
+                <a
+                  href="https://github.com/decoder-17"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="GitHub profile"
+                  title="GitHub"
+                >
+                  <GitHubIcon />
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/int-tanupam/"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="LinkedIn profile"
+                  title="LinkedIn"
+                >
+                  <LinkedInIcon />
+                </a>
+              </span>
+            </div>
+            <div className="footer-legal">
+              © 2026 ·{" "}
               <a
-                href="https://github.com/decoder-17"
+                href="https://github.com/decoder-17/Credit-Consumption-Calculator/blob/main/LICENSE"
                 target="_blank"
                 rel="noreferrer"
-                aria-label="GitHub profile"
-                title="GitHub"
               >
-                <GitHubIcon />
+                MIT License
               </a>
-              <a
-                href="https://www.linkedin.com/in/int-tanupam/"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="LinkedIn profile"
-                title="LinkedIn"
-              >
-                <LinkedInIcon />
-              </a>
-            </span>
-            · © 2026 ·{" "}
-            <a
-              href="https://github.com/decoder-17/Credit-Consumption-Calculator/blob/main/LICENSE"
-              target="_blank"
-              rel="noreferrer"
-            >
-              MIT License
-            </a>
+            </div>
           </footer>
         </div>
       </main>

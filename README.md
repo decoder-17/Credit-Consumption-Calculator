@@ -58,7 +58,7 @@ The project uses strict one-directional layers:
 - `src/app/` composes the provider registry.
 - `src/ui/` renders provider metadata and doesn't branch on provider IDs.
 
-The provider contract is the extension point. A provider supplies identity, unit, rate-card provenance, usage metadata, a price function and disclaimers. The UI only consumes that contract. See [MIGRATION.md](MIGRATION.md) for how the original single-file calculator maps onto these layers.
+The provider contract is the extension point. A provider supplies identity, unit, rate-card provenance, usage metadata, a price function and disclaimers. The UI only consumes that contract.
 
 ### Adding a subscription
 

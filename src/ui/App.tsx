@@ -763,7 +763,7 @@ export function App() {
           <footer className="app-footer">
             <div className="footer-credit">
               <span>
-                Developed by <strong>Tanupam</strong>
+                <strong>Tanupam's Brainchild</strong>
               </span>
               <span className="footer-social">
                 <a

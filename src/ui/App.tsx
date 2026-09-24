@@ -144,7 +144,7 @@ export function App() {
         error:
           cause instanceof MissingRateDataError
             ? cause.message
-            : "Pricing could not be calculated for this input. Check your rate card configuration.",
+            : "Couldn't price this input. Check the rate card configuration.",
       };
     }
   }
@@ -293,7 +293,7 @@ export function App() {
               <article className="card kpi-card">
                 <h3 className="kpi-title">
                   Credits Remaining
-                  <KpiInfo text="Total credits minus consumed credits and this month's calculated usage." />
+                  <KpiInfo text="Total credits, less what you've already consumed and this month's calculated usage." />
                 </h3>
                 <p
                   className={`kpi-value${remaining < 0 ? " negative" : utilization >= 0.85 ? " warning" : ""}`}
@@ -303,7 +303,7 @@ export function App() {
                 <p className="kpi-subtitle">
                   {account.total
                     ? `Of ${formatNumber(account.total)} total credits`
-                    : "Enter your total credits below"}
+                    : "Add your total credits below"}
                 </p>
                 <div className="gauge">
                   <span
@@ -334,7 +334,7 @@ export function App() {
               <article className="card kpi-card">
                 <h3 className="kpi-title">
                   Calculated This Month
-                  <KpiInfo text="Credits calculated from the usage entered for the selected month." />
+                  <KpiInfo text="What the usage you've entered for the selected month comes to, in credits." />
                 </h3>
                 <p className="kpi-value">{formatNumber(total)}</p>
                 <p className="kpi-subtitle">
@@ -360,13 +360,13 @@ export function App() {
               <article className="card kpi-card">
                 <h3 className="kpi-title">
                   Consumed To Date
-                  <KpiInfo text="Credits already consumed before the selected month." />
+                  <KpiInfo text="What you'd already used before the selected month." />
                 </h3>
                 <p className="kpi-value">{formatNumber(account.consumed)}</p>
                 <p className="kpi-subtitle">
                   {account.total
                     ? `${((account.consumed / account.total) * 100).toFixed(1)}% of total credits`
-                    : "No total credits entered"}
+                    : "Enter total credits to see the percentage"}
                 </p>
                 <div className="kpi-footer">
                   <div className="kpi-chips">
@@ -380,7 +380,7 @@ export function App() {
               <article className="card kpi-card">
                 <h3 className="kpi-title">
                   Contract Remaining
-                  <KpiInfo text="Days left until the Order End Date." />
+                  <KpiInfo text="Days left before your Order End Date." />
                 </h3>
                 <p className="kpi-value">
                   {contractRemaining(account.endDate)}
@@ -388,7 +388,7 @@ export function App() {
                 <p className="kpi-subtitle">
                   {account.endDate
                     ? `Order ends ${formatIsoDate(account.endDate)}`
-                    : "No Order End Date set"}
+                    : "Set an Order End Date below"}
                 </p>
                 <div className="kpi-footer">
                   <div className="kpi-chips">
@@ -522,7 +522,7 @@ export function App() {
                     })
                   }
                 >
-                  Load Example Figures
+                  Load Example Usage
                 </button>
                 <button
                   className="button secondary"
@@ -541,8 +541,9 @@ export function App() {
               </div>
             </div>
             <p className="basis-note">
-              <b>Per Day</b> meters are multiplied by the days in the selected
-              month. <b>Per Month</b> meters use the month's figure directly.
+              Enter a daily figure for <b>Per Day</b> meters and it's multiplied
+              by the days in the selected month. <b>Per Month</b> meters are
+              used as entered.
             </p>
             <div className="table-scroll">
               <table>
@@ -644,7 +645,7 @@ export function App() {
                   {savedPeriods.length === 0 ? (
                     <tr>
                       <td className="empty left" colSpan={6}>
-                        No saved months yet. Enter usage above and press Save
+                        Nothing saved yet. Fill in a month's usage and hit Save
                         Month.
                       </td>
                     </tr>
@@ -710,12 +711,12 @@ export function App() {
             <div className="terms-notice">
               <InfoIcon width={16} height={16} />
               <p>
-                <strong>For calculation purposes only.</strong> This tool
-                produces estimates to help you plan credit usage. It is not a
-                billing statement, contract, or legal document, and no legal or
-                financial liability is accepted for decisions made using these
-                figures — always verify against your official rate card, Order
-                Form, and account team.
+                <strong>For calculation purposes only.</strong> Treat these
+                numbers as planning estimates. They aren't a billing statement,
+                a contract or a legal document, and no legal or financial
+                liability is accepted for decisions made on them. Check anything
+                that matters against your rate card and Order Form, or with your
+                account team.
               </p>
             </div>
             <div className="terms-links">
@@ -749,13 +750,31 @@ export function App() {
             <div className="terms-affiliation" role="note">
               <InfoIcon width={16} height={16} />
               <p>
-                <strong>Independent tool.</strong> This tool is not affiliated
+                <strong>Independent tool.</strong> This tool isn't affiliated
                 with, endorsed by, or sponsored by MuleSoft or Salesforce.
                 MuleSoft and Salesforce are trademarks of their respective
                 owners.
               </p>
             </div>
           </section>
+          <footer className="app-footer">
+            Developed by Tanupam Saha ·{" "}
+            <a
+              href="https://github.com/tanupam-CCI"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub @tanupam-CCI
+            </a>{" "}
+            · © 2026 ·{" "}
+            <a
+              href="https://github.com/tanupam-CCI/Credit-Consumption-Calculator/blob/main/LICENSE"
+              target="_blank"
+              rel="noreferrer"
+            >
+              MIT License
+            </a>
+          </footer>
         </div>
       </main>
     </div>

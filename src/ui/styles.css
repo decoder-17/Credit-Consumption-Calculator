@@ -143,7 +143,6 @@ body {
 .nav-item:focus-visible,
 .sidebar-links a:focus-visible,
 .button:focus-visible,
-.inline-button:focus-visible,
 .remove-button:focus-visible,
 .terms-link:focus-visible,
 .model-switcher button:focus-visible {
@@ -472,16 +471,6 @@ body {
 .button.secondary:hover {
   background: var(--row-hover);
   border-color: var(--blue);
-}
-.inline-button {
-  border: 0;
-  background: none;
-  color: var(--blue);
-  cursor: pointer;
-  font: inherit;
-  font-size: 12px;
-  text-align: left;
-  padding: 0;
 }
 .basis-note {
   margin: 0 0 14px;

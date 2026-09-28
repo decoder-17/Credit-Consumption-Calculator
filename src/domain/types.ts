@@ -1,4 +1,5 @@
-export type PricingUnit = "Mule Credits" | "USD" | "seats";
+export type PricingUnit =
+  "Mule Credits" | "Automation Credits" | "USD" | "seats";
 
 export type UsageType = {
   id: string;

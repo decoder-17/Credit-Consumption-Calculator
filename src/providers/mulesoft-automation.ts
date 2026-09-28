@@ -13,7 +13,7 @@ function createModel(rateCard: AutomationRateCard): PricingModel {
   return {
     id: `mulesoft-automation-credits-${rateCard.version}`,
     displayName: `MuleSoft Automation Credits ${rateCard.version}`,
-    unit: "Mule Credits",
+    unit: "Automation Credits",
     rateCard,
     usageTypes: () =>
       rateCard.usageTypes.map(
@@ -44,7 +44,7 @@ function createModel(rateCard: AutomationRateCard): PricingModel {
       });
       return {
         total: lines.reduce((sum, line) => sum + line.amount, 0),
-        unit: "Mule Credits",
+        unit: "Automation Credits",
         lines,
       };
     },

@@ -23,11 +23,13 @@ describe("MuleSoft Automation Credits provider", () => {
     const model = muleSoftAutomationProvider.models?.find(
       (item) => item.rateCard.version === "3.0",
     );
-    expect(
-      model?.price({
-        "flow-integration-tasks": 3,
-        "flow-orchestration-runs": 10,
-      }).total,
-    ).toBe(6);
+    const result = model?.price({
+      "flow-integration-tasks": 3,
+      "idp-document-pages": 2,
+      "flow-idp-pages": 1,
+      "flow-orchestration-runs": 10,
+    });
+    expect(result?.total).toBe(96);
+    expect(result?.unit).toBe("Automation Credits");
   });
 });

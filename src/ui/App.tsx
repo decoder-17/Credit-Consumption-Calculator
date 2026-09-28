@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  billableDaysInMonth,
+  daysInMonth,
   MissingRateDataError,
   type PricingModel,
   type UsageType,
@@ -45,11 +47,6 @@ function freshAccount(): Account {
     inputs: {},
     months: {},
   };
-}
-function daysFor(period: string): number {
-  if (!period) return 30;
-  const [year, month] = period.split("-").map(Number);
-  return new Date(year, month, 0).getDate();
 }
 function monthName(period: string): string {
   if (!period) return "-";
@@ -108,7 +105,10 @@ export function App() {
   const [account, setAccount] = useState<Account>(() =>
     readAccount(storageKey),
   );
-  const days = daysFor(account.period);
+  const monthDays = daysInMonth(account.period);
+  const days = billableDaysInMonth(account.period, account.endDate);
+  const daysLabel =
+    days === monthDays ? `${days} days` : `${days} of ${monthDays} days`;
   const usageTypes = profile.usageTypes();
 
   useEffect(() => {
@@ -341,14 +341,15 @@ export function App() {
                 </h3>
                 <p className="kpi-value">{formatNumber(total)}</p>
                 <p className="kpi-subtitle">
-                  {monthName(account.period)} · {days} days
+                  {monthName(account.period)} · {daysLabel}
                 </p>
                 <div className="kpi-footer">
                   <div className="kpi-chips">
                     {usageTypes.some((item) => item.inputBasis === "day") && (
                       <span className="kpi-chip">
                         <ClockIcon className="chip-icon day" />
-                        {formatNumber(creditsByBasis.day)} Per Day
+                        {formatNumber(days ? creditsByBasis.day / days : 0)} Avg
+                        Per Day
                       </span>
                     )}
                     {usageTypes.some((item) => item.inputBasis !== "day") && (
@@ -506,7 +507,7 @@ export function App() {
               <h2>
                 Usage This Month{" "}
                 <em>
-                  · {monthName(account.period)} · {days} days
+                  · {monthName(account.period)} · {daysLabel}
                 </em>
               </h2>
               <div className="button-row">
@@ -545,8 +546,10 @@ export function App() {
             </div>
             <p className="basis-note">
               Enter a daily figure for <b>Per Day</b> meters and it's multiplied
-              by the days in the selected month. <b>Per Month</b> meters are
-              used as entered.
+              by the billable days in the selected month, which stop at the
+              Order End Date. For flows, assets, spaces, connections and load
+              balancers, that's the average count in use each day.{" "}
+              <b>Per Month</b> meters are used as entered.
             </p>
             <div className="table-scroll">
               <table>

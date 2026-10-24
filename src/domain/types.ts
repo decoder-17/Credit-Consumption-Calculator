@@ -10,6 +10,14 @@ export type UsageType = {
   exampleQuantity?: number;
 };
 
+// A per-day meter can change partway through the month. Each segment reads
+// "from this day of the month, the value becomes N"; the value holds until the
+// next change-point (or the end of the billable window).
+export type DailySegment = {
+  fromDay: number;
+  value: number;
+};
+
 export type DocumentationLink = {
   label: string;
   url: string;

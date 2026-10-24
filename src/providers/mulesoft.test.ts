@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { scheduleUnits } from "../domain";
 import { muleSoftRateCard } from "../rate-cards/mulesoft-mule-credits";
 import { muleSoftProvider } from "./mulesoft";
 
@@ -77,5 +78,64 @@ describe("MuleSoft Mule Credits provider", () => {
   });
   it("prices nothing for no usage", () => {
     expect(muleSoftProvider.price({}).total).toBe(0);
+  });
+});
+
+describe("MuleSoft daily schedule (mid-month changes)", () => {
+  it("sums a mid-month flow increase, then prices within Tier 1", () => {
+    // 10 flows days 1-9, 15 from day 10 of a 31-day month => 10*9 + 15*22 = 420.
+    const flows = scheduleUnits(
+      [
+        { fromDay: 1, value: 10 },
+        { fromDay: 10, value: 15 },
+      ],
+      31,
+    );
+    expect(flows).toBe(420);
+    // 420 flow-days, all within Tier 1 (<= 1,500 flows): 420 * 200.
+    expect(muleSoftProvider.price({ flows }).total).toBe(84000);
+  });
+  it("sums a mid-month decrease", () => {
+    // 10 flows days 1-9, 5 from day 10 => 10*9 + 5*22 = 200.
+    const flows = scheduleUnits(
+      [
+        { fromDay: 1, value: 10 },
+        { fromDay: 10, value: 5 },
+      ],
+      31,
+    );
+    expect(flows).toBe(200);
+    expect(muleSoftProvider.price({ flows }).total).toBe(40000);
+  });
+  it("matches a flat daily figure when the schedule never changes", () => {
+    // A single change-point reduces to value * days, unchanged from before.
+    const flows = scheduleUnits([{ fromDay: 1, value: 12 }], 30);
+    expect(flows).toBe(360);
+    expect(muleSoftProvider.price({ flows }).total).toBe(72000);
+  });
+  it("crosses a tier boundary when summed daily usage is high enough", () => {
+    // 50 days 1-9, 100 from day 10 => 50*9 + 100*22 = 2,650 flow-days.
+    const flows = scheduleUnits(
+      [
+        { fromDay: 1, value: 50 },
+        { fromDay: 10, value: 100 },
+      ],
+      31,
+    );
+    expect(flows).toBe(2650);
+    // Tier 1: 1,500 * 200 = 300,000; Tier 2: 1,150 * 120 = 138,000.
+    expect(muleSoftProvider.price({ flows }).total).toBe(438000);
+  });
+  it("stops counting at the Order End Date (billable window)", () => {
+    // Order ends day 8: the day-10 change never lands => 10*8 = 80 flow-days.
+    const flows = scheduleUnits(
+      [
+        { fromDay: 1, value: 10 },
+        { fromDay: 10, value: 15 },
+      ],
+      8,
+    );
+    expect(flows).toBe(80);
+    expect(muleSoftProvider.price({ flows }).total).toBe(16000);
   });
 });

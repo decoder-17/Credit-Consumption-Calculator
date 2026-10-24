@@ -16,12 +16,15 @@ export const muleSoftRateCard = {
     },
   ],
   thresholds: [300000, 900000, 5000000, null] as const,
+  // Every usage type is metered daily. Flows, assets, spaces, connections and
+  // load balancers bill per unit per day; messages, requests, pages and tasks
+  // bill on volume. Daily inputs are multiplied by the billable days in the month.
   usageTypes: [
     {
       id: "flows",
       label: "MuleSoft Flows",
-      basis: "per flow",
-      inputBasis: "month" as const,
+      basis: "per flow (daily max)",
+      inputBasis: "day" as const,
       unitsPerBlock: 1,
       rates: [200, 120, 48, 19.2],
       exampleQuantity: 800,
@@ -39,7 +42,7 @@ export const muleSoftRateCard = {
       id: "assets",
       label: "Managed Assets",
       basis: "per asset",
-      inputBasis: "month" as const,
+      inputBasis: "day" as const,
       unitsPerBlock: 1,
       rates: [1000, 600, 240, 96],
       exampleQuantity: 40,
@@ -75,7 +78,7 @@ export const muleSoftRateCard = {
       id: "pspace",
       label: "Private Spaces",
       basis: "per space",
-      inputBasis: "month" as const,
+      inputBasis: "day" as const,
       unitsPerBlock: 1,
       rates: [7500, 4500, 1800, 720],
       exampleQuantity: 2,
@@ -84,7 +87,7 @@ export const muleSoftRateCard = {
       id: "netconn",
       label: "Network Connections",
       basis: "per connection",
-      inputBasis: "month" as const,
+      inputBasis: "day" as const,
       unitsPerBlock: 1,
       rates: [750, 450, 180, 72],
       exampleQuantity: 2,
@@ -93,7 +96,7 @@ export const muleSoftRateCard = {
       id: "lb",
       label: "Load Balancers",
       basis: "per LB",
-      inputBasis: "month" as const,
+      inputBasis: "day" as const,
       unitsPerBlock: 1,
       rates: [4800, 2880, 1152, 460.8],
       exampleQuantity: 1,

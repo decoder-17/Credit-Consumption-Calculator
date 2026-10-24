@@ -154,6 +154,14 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         exampleQuantity: 3000,
       },
       {
+        id: "flow-idp-pages",
+        label: "MuleSoft for Flow: IDP",
+        basis: "per page",
+        rate: 30,
+        inputBasis: "month",
+        exampleQuantity: 1000,
+      },
+      {
         id: "flow-orchestration-runs",
         label: "Flow Orchestration Runs",
         basis: "included for Enterprise and higher editions",

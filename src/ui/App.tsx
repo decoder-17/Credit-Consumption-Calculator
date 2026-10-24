@@ -1,7 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import {
+  billableDaysInMonth,
+  daysInMonth,
+  type DailySegment,
   MissingRateDataError,
   type PricingModel,
+  scheduleUnits,
   type UsageType,
 } from "../domain";
 import { defaultProviderId, providerRegistry } from "../app/registry";
@@ -22,6 +26,7 @@ const nf = new Intl.NumberFormat("en-US");
 const storagePrefix = "credit-consumption-calc-v2";
 type SavedMonth = {
   inputs: Record<string, number>;
+  schedules: Record<string, DailySegment[]>;
   days: number;
   credits: number;
   savedAt: string;
@@ -32,6 +37,7 @@ type Account = {
   consumed: number;
   endDate: string;
   inputs: Record<string, number>;
+  schedules: Record<string, DailySegment[]>;
   months: Record<string, SavedMonth>;
 };
 
@@ -43,13 +49,19 @@ function freshAccount(): Account {
     consumed: 0,
     endDate: "",
     inputs: {},
+    schedules: {},
     months: {},
   };
 }
-function daysFor(period: string): number {
-  if (!period) return 30;
-  const [year, month] = period.split("-").map(Number);
-  return new Date(year, month, 0).getDate();
+
+// Day 1's value lives in `inputs`; `schedules` holds only the later change-points.
+// Together they are the meter's full day-keyed schedule for the month.
+function effectiveSchedule(
+  id: string,
+  inputs: Record<string, number>,
+  schedules: Record<string, DailySegment[]>,
+): DailySegment[] {
+  return [{ fromDay: 1, value: inputs[id] ?? 0 }, ...(schedules[id] ?? [])];
 }
 function monthName(period: string): string {
   if (!period) return "-";
@@ -108,8 +120,22 @@ export function App() {
   const [account, setAccount] = useState<Account>(() =>
     readAccount(storageKey),
   );
-  const days = daysFor(account.period);
+  const monthDays = daysInMonth(account.period);
+  const days = billableDaysInMonth(account.period, account.endDate);
+  const daysLabel =
+    days === monthDays ? `${days} days` : `${days} of ${monthDays} days`;
   const usageTypes = profile.usageTypes();
+  const [openSchedules, setOpenSchedules] = useState<Set<string>>(new Set());
+
+  // Per-day meters bill on their full day-keyed schedule; per-month meters as entered.
+  function monthlyUnits(item: UsageType): number {
+    return item.inputBasis === "day"
+      ? scheduleUnits(
+          effectiveSchedule(item.id, account.inputs, account.schedules),
+          days,
+        )
+      : (account.inputs[item.id] ?? 0);
+  }
 
   useEffect(() => {
     setModelId(provider.models?.[0]?.id ?? provider.id);
@@ -131,12 +157,53 @@ export function App() {
       inputs: { ...account.inputs, [id]: Math.max(0, Number(value) || 0) },
     });
   }
+  function toggleSchedule(id: string) {
+    setOpenSchedules((open) => {
+      const next = new Set(open);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+  function addSegment(id: string) {
+    const current = account.schedules[id] ?? [];
+    const lastDay = current.at(-1)?.fromDay ?? 1;
+    const nextDay = Math.min(monthDays, Math.max(2, lastDay + 1));
+    const value = current.at(-1)?.value ?? account.inputs[id] ?? 0;
+    updateAccount({
+      ...account,
+      schedules: {
+        ...account.schedules,
+        [id]: [...current, { fromDay: nextDay, value }],
+      },
+    });
+  }
+  function updateSegment(
+    id: string,
+    index: number,
+    patch: Partial<DailySegment>,
+  ) {
+    const current = account.schedules[id] ?? [];
+    updateAccount({
+      ...account,
+      schedules: {
+        ...account.schedules,
+        [id]: current.map((segment, i) =>
+          i === index ? { ...segment, ...patch } : segment,
+        ),
+      },
+    });
+  }
+  function removeSegment(id: string, index: number) {
+    const next = (account.schedules[id] ?? []).filter((_, i) => i !== index);
+    const schedules = { ...account.schedules };
+    if (next.length) schedules[id] = next;
+    else delete schedules[id];
+    updateAccount({ ...account, schedules });
+  }
   function price() {
     const input = Object.fromEntries(
-      usageTypes.map((item) => [
-        item.id,
-        (account.inputs[item.id] ?? 0) * (item.inputBasis === "day" ? days : 1),
-      ]),
+      usageTypes.map((item) => [item.id, monthlyUnits(item)]),
     );
     try {
       return { result: profile.price(input), error: null };
@@ -150,7 +217,13 @@ export function App() {
       };
     }
   }
-  const priced = useMemo(price, [account.inputs, days, profile, usageTypes]);
+  const priced = useMemo(price, [
+    account.inputs,
+    account.schedules,
+    days,
+    profile,
+    usageTypes,
+  ]);
   const total = priced.result?.total ?? 0;
   const remaining = account.total - account.consumed - total;
   const utilization = account.total
@@ -175,6 +248,7 @@ export function App() {
         ...account.months,
         [account.period]: {
           inputs: account.inputs,
+          schedules: account.schedules,
           days,
           credits: priced.result.total,
           savedAt: new Date().toISOString(),
@@ -206,11 +280,17 @@ export function App() {
       ["Usage Type", "Input", "Monthly Units", "Credits"],
     ];
     usageTypes.forEach((item) => {
-      const input = account.inputs[item.id] ?? 0;
+      const segments = account.schedules[item.id] ?? [];
+      const input =
+        item.inputBasis === "day" && segments.length
+          ? effectiveSchedule(item.id, account.inputs, account.schedules)
+              .map((segment) => `d${segment.fromDay}:${segment.value}`)
+              .join(" ")
+          : (account.inputs[item.id] ?? 0);
       rows.push([
         item.label,
         input,
-        input * (item.inputBasis === "day" ? days : 1),
+        monthlyUnits(item),
         priced.result?.lines.find((line) => line.usageTypeId === item.id)
           ?.amount ?? 0,
       ]);
@@ -341,14 +421,15 @@ export function App() {
                 </h3>
                 <p className="kpi-value">{formatNumber(total)}</p>
                 <p className="kpi-subtitle">
-                  {monthName(account.period)} · {days} days
+                  {monthName(account.period)} · {daysLabel}
                 </p>
                 <div className="kpi-footer">
                   <div className="kpi-chips">
                     {usageTypes.some((item) => item.inputBasis === "day") && (
                       <span className="kpi-chip">
                         <ClockIcon className="chip-icon day" />
-                        {formatNumber(creditsByBasis.day)} Per Day
+                        {formatNumber(days ? creditsByBasis.day / days : 0)} Avg
+                        Per Day
                       </span>
                     )}
                     {usageTypes.some((item) => item.inputBasis !== "day") && (
@@ -448,6 +529,8 @@ export function App() {
                         period: event.target.value,
                         inputs:
                           account.months[event.target.value]?.inputs ?? {},
+                        schedules:
+                          account.months[event.target.value]?.schedules ?? {},
                       })
                     }
                   />
@@ -506,7 +589,7 @@ export function App() {
               <h2>
                 Usage This Month{" "}
                 <em>
-                  · {monthName(account.period)} · {days} days
+                  · {monthName(account.period)} · {daysLabel}
                 </em>
               </h2>
               <div className="button-row">
@@ -522,6 +605,7 @@ export function App() {
                           item.exampleQuantity ?? 0,
                         ]),
                       ),
+                      schedules: {},
                     })
                   }
                 >
@@ -530,7 +614,9 @@ export function App() {
                 <button
                   className="button secondary"
                   type="button"
-                  onClick={() => updateAccount({ ...account, inputs: {} })}
+                  onClick={() =>
+                    updateAccount({ ...account, inputs: {}, schedules: {} })
+                  }
                 >
                   Clear Month
                 </button>
@@ -545,8 +631,12 @@ export function App() {
             </div>
             <p className="basis-note">
               Enter a daily figure for <b>Per Day</b> meters and it's multiplied
-              by the days in the selected month. <b>Per Month</b> meters are
-              used as entered.
+              by the billable days in the selected month, which stop at the
+              Order End Date. For flows, assets, spaces, connections and load
+              balancers, that's the count in use each day. If that count changed
+              partway through the month, hit <b>Add change</b> to log the day it
+              changed and the new value. <b>Per Month</b> meters are used as
+              entered.
             </p>
             <div className="table-scroll">
               <table>
@@ -563,42 +653,157 @@ export function App() {
                 <tbody>
                   {usageTypes.map((item: UsageType) => {
                     const input = account.inputs[item.id] ?? 0;
-                    const monthly =
-                      input * (item.inputBasis === "day" ? days : 1);
+                    const monthly = monthlyUnits(item);
+                    const segments = account.schedules[item.id] ?? [];
+                    const perDay = item.inputBasis === "day";
+                    const isOpen = openSchedules.has(item.id);
                     const line = priced.result?.lines.find(
                       (value) => value.usageTypeId === item.id,
                     );
                     const share = total ? (line?.amount ?? 0) / total : 0;
                     const tier = line?.tierBreakdown?.at(-1)?.tier;
                     return (
-                      <tr key={item.id}>
-                        <td className="left">
-                          <strong>{item.label}</strong>
-                          <small>
-                            {item.basis} ·{" "}
-                            {item.inputBasis === "day"
-                              ? "per day"
-                              : "per month"}
-                          </small>
-                        </td>
-                        <td>
-                          <input
-                            className="table-input"
-                            type="number"
-                            min="0"
-                            value={input || ""}
-                            placeholder="0"
-                            onChange={(event) =>
-                              updateInput(item.id, event.target.value)
-                            }
-                            aria-label={`${item.label} input`}
-                          />
-                        </td>
-                        <td>{formatNumber(monthly)}</td>
-                        <td>{tier ? `T${tier}` : "-"}</td>
-                        <td>{formatNumber(line?.amount ?? 0)}</td>
-                        <td>{(share * 100).toFixed(1)}%</td>
-                      </tr>
+                      <Fragment key={item.id}>
+                        <tr>
+                          <td className="left">
+                            <strong>{item.label}</strong>
+                            <small>
+                              {item.basis} · {perDay ? "per day" : "per month"}
+                            </small>
+                          </td>
+                          <td>
+                            <div className="input-cell">
+                              <input
+                                className="table-input"
+                                type="number"
+                                min="0"
+                                value={input || ""}
+                                placeholder="0"
+                                onChange={(event) =>
+                                  updateInput(item.id, event.target.value)
+                                }
+                                aria-label={`${item.label}${perDay ? " from day 1" : ""} input`}
+                              />
+                              {perDay && (
+                                <button
+                                  type="button"
+                                  className={`schedule-toggle${segments.length ? " has-changes" : ""}`}
+                                  aria-expanded={isOpen}
+                                  onClick={() => toggleSchedule(item.id)}
+                                >
+                                  <ClockIcon width={13} height={13} />
+                                  {segments.length
+                                    ? `${segments.length + 1} steps`
+                                    : "Add change"}
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                          <td>{formatNumber(monthly)}</td>
+                          <td>{tier ? `T${tier}` : "-"}</td>
+                          <td>{formatNumber(line?.amount ?? 0)}</td>
+                          <td>{(share * 100).toFixed(1)}%</td>
+                        </tr>
+                        {perDay && isOpen && (
+                          <tr className="schedule-row">
+                            <td className="left" colSpan={6}>
+                              <div className="schedule-editor">
+                                <p className="schedule-hint">
+                                  The count on each day of the month. Days
+                                  before the first row, and days past the Order
+                                  End Date, don't count.
+                                </p>
+                                <div className="schedule-rows">
+                                  <div className="schedule-item">
+                                    <span className="schedule-day">
+                                      From day 1
+                                    </span>
+                                    <input
+                                      className="table-input"
+                                      type="number"
+                                      min="0"
+                                      value={input || ""}
+                                      placeholder="0"
+                                      onChange={(event) =>
+                                        updateInput(item.id, event.target.value)
+                                      }
+                                      aria-label={`${item.label} from day 1`}
+                                    />
+                                  </div>
+                                  {segments.map((segment, index) => (
+                                    <div className="schedule-item" key={index}>
+                                      <label className="schedule-day">
+                                        From day
+                                        <input
+                                          className="table-input day-input"
+                                          type="number"
+                                          min="2"
+                                          max={monthDays}
+                                          value={segment.fromDay || ""}
+                                          onChange={(event) =>
+                                            updateSegment(item.id, index, {
+                                              fromDay: Math.max(
+                                                2,
+                                                Math.min(
+                                                  monthDays,
+                                                  Math.floor(
+                                                    Number(
+                                                      event.target.value,
+                                                    ) || 2,
+                                                  ),
+                                                ),
+                                              ),
+                                            })
+                                          }
+                                          aria-label={`${item.label} change ${index + 1} day`}
+                                        />
+                                      </label>
+                                      <input
+                                        className="table-input"
+                                        type="number"
+                                        min="0"
+                                        value={segment.value || ""}
+                                        placeholder="0"
+                                        onChange={(event) =>
+                                          updateSegment(item.id, index, {
+                                            value: Math.max(
+                                              0,
+                                              Number(event.target.value) || 0,
+                                            ),
+                                          })
+                                        }
+                                        aria-label={`${item.label} change ${index + 1} value`}
+                                      />
+                                      <button
+                                        className="remove-button"
+                                        type="button"
+                                        onClick={() =>
+                                          removeSegment(item.id, index)
+                                        }
+                                      >
+                                        Remove
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="schedule-footer">
+                                  <button
+                                    className="button secondary"
+                                    type="button"
+                                    onClick={() => addSegment(item.id)}
+                                  >
+                                    Add change
+                                  </button>
+                                  <span className="schedule-summary">
+                                    {formatNumber(monthly)} units over{" "}
+                                    {daysLabel}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
                     );
                   })}
                 </tbody>

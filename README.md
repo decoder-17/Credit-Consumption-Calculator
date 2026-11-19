@@ -39,14 +39,18 @@ Saved months live in your browser's local storage only. Nothing is sent to a ser
 
 ## Getting started
 
-Requires Node.js 20 or later.
+Requires Git and Node.js 20 or later (npm ships with Node).
 
 ```sh
+git clone https://github.com/decoder-17/Credit-Consumption-Calculator.git
+cd Credit-Consumption-Calculator
 npm install
-npm run dev     # local dev server
+npm run dev     # local dev server at http://localhost:5173
 npm run ci      # typecheck, lint and tests
 npm run build   # production build into dist/
 ```
+
+No environment variables or other setup are needed.
 
 ## Architecture
 

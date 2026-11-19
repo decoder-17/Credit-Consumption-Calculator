@@ -8,9 +8,7 @@ export type AutomationRateCard = RateCardMeta & {
     label: string;
     basis: string;
     rate: number;
-    // Every Automation Credits meter is a volume meter (minutes, calls, tasks,
-    // pages or runs consumed over the month), so it is metered per day: the
-    // daily figure is multiplied by the billable days in the month.
+    // Volume meters, metered per day: daily figure times billable days.
     inputBasis: "day";
     exampleQuantity?: number;
   }[];

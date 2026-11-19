@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import {
+  allocateRoundedCredits,
   billableDaysInMonth,
   daysInMonth,
   type DailySegment,
@@ -224,16 +225,27 @@ export function App() {
     profile,
     usageTypes,
   ]);
-  const total = priced.result?.total ?? 0;
+  // Round every line to whole credits with a shared allocation, so the rows the
+  // UI shows always sum to the total it shows (and to the saved ledger and CSV).
+  // The engine keeps exact precision; only the display is reconciled here.
+  const exactAmounts = usageTypes.map(
+    (item) =>
+      priced.result?.lines.find((line) => line.usageTypeId === item.id)
+        ?.amount ?? 0,
+  );
+  const roundedAmounts = allocateRoundedCredits(exactAmounts);
+  const displayById: Record<string, number> = {};
+  usageTypes.forEach((item, index) => {
+    displayById[item.id] = roundedAmounts[index];
+  });
+  const total = roundedAmounts.reduce((sum, amount) => sum + amount, 0);
   const remaining = account.total - account.consumed - total;
   const utilization = account.total
     ? (account.consumed + total) / account.total
     : 0;
   const creditsByBasis = usageTypes.reduce(
     (sums, item) => {
-      const amount =
-        priced.result?.lines.find((line) => line.usageTypeId === item.id)
-          ?.amount ?? 0;
+      const amount = displayById[item.id] ?? 0;
       if (item.inputBasis === "day") sums.day += amount;
       else sums.month += amount;
       return sums;
@@ -250,7 +262,7 @@ export function App() {
           inputs: account.inputs,
           schedules: account.schedules,
           days,
-          credits: priced.result.total,
+          credits: total,
           savedAt: new Date().toISOString(),
         },
       },
@@ -291,8 +303,7 @@ export function App() {
         item.label,
         input,
         monthlyUnits(item),
-        priced.result?.lines.find((line) => line.usageTypeId === item.id)
-          ?.amount ?? 0,
+        displayById[item.id] ?? 0,
       ]);
     });
     rows.push([], ["Saved Ledger"], ["Month", "Days", "Credits", "Cumulative"]);
@@ -660,7 +671,8 @@ export function App() {
                     const line = priced.result?.lines.find(
                       (value) => value.usageTypeId === item.id,
                     );
-                    const share = total ? (line?.amount ?? 0) / total : 0;
+                    const amount = displayById[item.id] ?? 0;
+                    const share = total ? amount / total : 0;
                     const tier = line?.tierBreakdown?.at(-1)?.tier;
                     return (
                       <Fragment key={item.id}>
@@ -701,7 +713,7 @@ export function App() {
                           </td>
                           <td>{formatNumber(monthly)}</td>
                           <td>{tier ? `T${tier}` : "-"}</td>
-                          <td>{formatNumber(line?.amount ?? 0)}</td>
+                          <td>{formatNumber(amount)}</td>
                           <td>{(share * 100).toFixed(1)}%</td>
                         </tr>
                         {perDay && isOpen && (

@@ -19,7 +19,7 @@ The sidebar has two subscriptions.
 
 - Graduated tier pricing. Each usage type's multiplier steps down as that type's monthly consumption crosses 300K, 900K and 5M credits. Thresholds are tracked per usage type, reset on the 1st of each calendar month, and apply across all environments.
 - Usage types: MuleSoft Flows, MuleSoft Messages, Managed Assets, Gateway Requests, IDP Pages, Flow Integration Tasks, Private Spaces, Network Connections and Load Balancers.
-- Per Day and Per Month inputs. Daily meters are multiplied by the days in the calculation month. Monthly meters are taken as entered.
+- Every usage type is metered per day. Flows, Managed Assets, Private Spaces, Network Connections and Load Balancers consume their multiplier for each unit on each day (enter the average daily count; for flows, the daily max). Messages, requests, pages and tasks are entered as average daily volume. Inputs are multiplied by the billable days in the calculation month, which stop at the Order End Date (inclusive).
 
 **MuleSoft Automation Credits**
 

@@ -564,6 +564,88 @@ tfoot td {
 .remove-button:hover {
   color: var(--red);
 }
+.input-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.schedule-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-control);
+  color: var(--text-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+.schedule-toggle:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.schedule-toggle.has-changes {
+  border-color: var(--blue);
+  color: var(--blue);
+  font-weight: 600;
+}
+.schedule-row td {
+  background: var(--soft);
+}
+.schedule-row:hover td {
+  background: var(--soft);
+}
+.schedule-editor {
+  display: grid;
+  gap: 12px;
+  padding: 4px 2px;
+}
+.schedule-hint {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.schedule-rows {
+  display: grid;
+  gap: 8px;
+}
+.schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.schedule-day {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 78px;
+}
+.schedule-item .table-input {
+  width: 110px;
+}
+.schedule-item .day-input {
+  width: 70px;
+}
+.schedule-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.schedule-summary {
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+}
 .notice {
   display: grid;
   gap: 5px;

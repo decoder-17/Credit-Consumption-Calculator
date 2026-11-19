@@ -640,13 +640,10 @@ export function App() {
               </div>
             </div>
             <p className="basis-note">
-              Enter a daily figure for <b>Per Day</b> meters and it's multiplied
-              by the billable days in the selected month, which stop at the
-              Order End Date. For flows, assets, spaces, connections and load
-              balancers, that's the count in use each day. If that count changed
-              partway through the month, hit <b>Add change</b> to log the day it
-              changed and the new value. <b>Per Month</b> meters are used as
-              entered.
+              Enter the average daily figure for each meter and it's multiplied
+              by the billable days in the month, which stop at the Order End
+              Date. If a figure changed partway through the month, hit{" "}
+              <b>Add change</b> to log the day and the new value.
             </p>
             <div className="table-scroll">
               <table>

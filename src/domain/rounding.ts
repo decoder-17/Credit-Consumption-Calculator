@@ -1,9 +1,5 @@
-// Credit amounts can be fractional (e.g. 15.5 credits), but the UI shows whole
-// credits. Rounding each line independently lets the rounded rows drift from the
-// rounded total, so a table can read "16 + 1" under a total of "16". This spreads
-// the rounding across the lines with the largest-remainder (Hamilton) method, so
-// the rounded rows always sum to the rounded total and nothing is ever off by a
-// single credit. The exact total is preserved for the engine and CSV precision.
+// Round line credits for display with the largest-remainder method, so the
+// rounded rows always sum to the rounded total. The engine keeps exact values.
 export function allocateRoundedCredits(amounts: readonly number[]): number[] {
   const floors = amounts.map((amount) => Math.floor(amount));
   const floorTotal = floors.reduce((sum, value) => sum + value, 0);

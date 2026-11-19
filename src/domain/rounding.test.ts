@@ -4,8 +4,8 @@ import { allocateRoundedCredits } from "./rounding";
 const sum = (values: number[]) => values.reduce((total, v) => total + v, 0);
 
 describe("allocateRoundedCredits", () => {
-  it("makes rounded rows sum to the rounded total (the reconciliation case)", () => {
-    // 15.5 + 0.62 = 16.12 -> rounded total 16; naive per-row rounding gives 16 + 1 = 17.
+  it("rounded rows sum to the rounded total", () => {
+    // 15.5 + 0.62 = 16.12; rows must total 16, not 16 + 1.
     const rows = allocateRoundedCredits([15.5, 0.62, 0, 0]);
     expect(sum(rows)).toBe(16);
     expect(sum(rows)).toBe(Math.round(15.5 + 0.62));
@@ -27,7 +27,7 @@ describe("allocateRoundedCredits", () => {
     expect(allocateRoundedCredits([])).toEqual([]);
     expect(allocateRoundedCredits([0, 0, 0])).toEqual([0, 0, 0]);
   });
-  it("never produces a total that differs from the rounded exact total", () => {
+  it("total always equals the rounded exact total", () => {
     const cases = [
       [0.5, 0.5],
       [0.1, 0.1, 0.1, 0.1, 0.1, 0.1],

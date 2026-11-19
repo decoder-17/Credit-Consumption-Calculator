@@ -225,9 +225,8 @@ export function App() {
     profile,
     usageTypes,
   ]);
-  // Round every line to whole credits with a shared allocation, so the rows the
-  // UI shows always sum to the total it shows (and to the saved ledger and CSV).
-  // The engine keeps exact precision; only the display is reconciled here.
+  // Display-round line credits so the rows always sum to the shown total,
+  // and the ledger and CSV match. The engine keeps exact precision.
   const exactAmounts = usageTypes.map(
     (item) =>
       priced.result?.lines.find((line) => line.usageTypeId === item.id)

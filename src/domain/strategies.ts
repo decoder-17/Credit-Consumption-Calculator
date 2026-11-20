@@ -25,8 +25,10 @@ export function graduatedTiers(
 
   config.tiers.forEach((tier, index) => {
     if (remaining <= Number.EPSILON) return;
+    // Thresholds are credit-denominated, so a unit spanning a boundary is split
+    // across tiers. A null (or absent) top threshold means unbounded.
     const capacity =
-      tier.upToCredits === null
+      tier.upToCredits == null
         ? Number.POSITIVE_INFINITY
         : tier.upToCredits - previousThreshold;
     const pricedUnits = Math.min(remaining, capacity / tier.creditsPerUnit);

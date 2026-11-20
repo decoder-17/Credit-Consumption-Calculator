@@ -6,6 +6,7 @@ import {
   type DailySegment,
   MissingRateDataError,
   type PricingModel,
+  type PricingProvider,
   scheduleUnits,
   type UsageType,
 } from "../domain";
@@ -98,6 +99,15 @@ function readAccount(key: string): Account {
     return freshAccount();
   }
 }
+// The provider's own default model is the one its rateCard reflects; fall back
+// to the first listed. Matching on version keeps the UI free of provider IDs.
+function defaultModelId(provider: PricingProvider): string {
+  if (!provider.models?.length) return provider.id;
+  const match = provider.models.find(
+    (model) => model.rateCard.version === provider.rateCard.version,
+  );
+  return (match ?? provider.models[0]).id;
+}
 function contractRemaining(endDate: string): string {
   if (!endDate) return "-";
   const end = new Date(`${endDate}T00:00:00`);
@@ -112,9 +122,7 @@ export function App() {
   const [providerId, setProviderId] = useState(defaultProviderId);
   const provider =
     providerRegistry.get(providerId) ?? [...providerRegistry.values()][0];
-  const [modelId, setModelId] = useState(
-    provider.models?.[0]?.id ?? provider.id,
-  );
+  const [modelId, setModelId] = useState(() => defaultModelId(provider));
   const profile: PricingModel =
     provider.models?.find((model) => model.id === modelId) ?? provider;
   const storageKey = `${storagePrefix}-${profile.id}`;
@@ -139,7 +147,7 @@ export function App() {
   }
 
   useEffect(() => {
-    setModelId(provider.models?.[0]?.id ?? provider.id);
+    setModelId(defaultModelId(provider));
   }, [provider]);
   useEffect(() => {
     setAccount(readAccount(storageKey));
@@ -678,6 +686,9 @@ export function App() {
                             <small>
                               {item.basis} · {perDay ? "per day" : "per month"}
                             </small>
+                            {line?.note && (
+                              <small className="usage-note">{line.note}</small>
+                            )}
                           </td>
                           <td>
                             <div className="input-cell">

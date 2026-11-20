@@ -79,6 +79,11 @@ describe("MuleSoft Mule Credits provider", () => {
   it("prices nothing for no usage", () => {
     expect(muleSoftProvider.price({}).total).toBe(0);
   });
+  it("keeps rates and tier thresholds the same length", () => {
+    muleSoftRateCard.usageTypes.forEach((type) => {
+      expect(type.rates).toHaveLength(muleSoftRateCard.thresholds.length);
+    });
+  });
 });
 
 describe("MuleSoft daily schedule (mid-month changes)", () => {

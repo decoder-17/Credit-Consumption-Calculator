@@ -37,9 +37,10 @@ function createModel(rateCard: AutomationRateCard): PricingModel {
           quantity,
           amount: strategy.amount,
           note:
-            usageType.rate === 0
+            usageType.note ??
+            (usageType.rate === 0
               ? "Included for the documented plan scope."
-              : undefined,
+              : undefined),
         };
       });
       return {
@@ -55,7 +56,7 @@ function createModel(rateCard: AutomationRateCard): PricingModel {
       "Billable days stop at the Order End Date. When the order ends partway through the calculation month, only the days up to and including the end date are counted.",
       "Automation Credits are priced per unit with no volume tiers, so a month's credits equal its total units times the rate.",
       rateCard.pricingMode === "units-per-credit"
-        ? "This system converts usage to credits (units per credit); 2.0 and 3.0 use multiplier rates, so totals aren't comparable across systems."
+        ? "This system converts usage to credits (units per credit), without rounding partial blocks; 2.0 and 3.0 use multiplier rates, so totals aren't comparable across systems."
         : "This system uses multiplier rates (credits per unit); 1.0 converts usage to credits, so totals aren't comparable across systems.",
       ...(rateCard.version === "3.0"
         ? [

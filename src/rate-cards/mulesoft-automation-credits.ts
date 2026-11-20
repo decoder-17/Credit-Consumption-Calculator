@@ -11,6 +11,7 @@ export type AutomationRateCard = RateCardMeta & {
     // Volume meters, metered per day: daily figure times billable days.
     inputBasis: "day";
     exampleQuantity?: number;
+    note?: string;
   }[];
 };
 
@@ -106,6 +107,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         rate: 100,
         inputBasis: "day",
         exampleQuantity: 20,
+        note: "Enterprise and higher; other editions follow General Flow Limits.",
       },
       {
         id: "idp-document-pages",
@@ -169,6 +171,7 @@ export const automationRateCards: readonly AutomationRateCard[] = [
         rate: 0,
         inputBasis: "day",
         exampleQuantity: 20,
+        note: "Included on Enterprise and higher; other editions follow General Flow Limits.",
       },
     ],
   },

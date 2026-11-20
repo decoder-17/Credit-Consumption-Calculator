@@ -71,6 +71,7 @@ export const muleSoftRateCard = {
       basis: "per task",
       inputBasis: "day" as const,
       unitsPerBlock: 1,
+      // Tier 4 is 0.19 as printed on the card, not 0.192 (0.096x base).
       rates: [2, 1.2, 0.48, 0.19],
       exampleQuantity: 66000,
     },

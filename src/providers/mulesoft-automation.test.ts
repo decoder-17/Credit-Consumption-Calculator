@@ -44,6 +44,15 @@ describe("MuleSoft Automation Credits provider", () => {
     expect(result?.total).toBe(96);
     expect(result?.unit).toBe("Automation Credits");
   });
+  it("flags the edition scope on Flow Orchestration Runs (2.0 and 3.0)", () => {
+    const note = (version: string) =>
+      modelFor(version)
+        ?.price({ "flow-orchestration-runs": 1 })
+        .lines.find((line) => line.usageTypeId === "flow-orchestration-runs")
+        ?.note;
+    expect(note("2.0")).toMatch(/General Flow Limits/);
+    expect(note("3.0")).toMatch(/General Flow Limits/);
+  });
 });
 
 describe("MuleSoft Automation Credits daily metering", () => {
